@@ -1,0 +1,11 @@
+- player:
+    - id
+    - name
+    - score
+
+/Controllers/
+    MenuController
+    LobbyController
+    TriviaController
+    SimonController
+

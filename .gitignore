@@ -1,0 +1,6 @@
+client2
+node_modules
+.vscode
+obj
+bin
+*.db
