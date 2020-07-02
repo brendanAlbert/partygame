@@ -35,14 +35,17 @@ namespace partygame
                 //     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200");
                 // });
                 options.AddPolicy("CorsPolicy", builder => builder
-                    .WithOrigins("http://localhost:4200")
+                    .WithOrigins("http://localhost:4200", "http://192.168.0.12:4200", "http://0.0.0.0:4200")
+                    // .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .AllowCredentials()
-                    .SetIsOriginAllowed(host => true));
+                .AllowCredentials());
+                // .SetIsOriginAllowed(host => true));
             });
             services.AddSignalR();
-            services.AddScoped<IUserService, UserService>();
+            // services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IGameService, GameService>();
+            services.AddSingleton<IGameRoomService, GameRoomService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

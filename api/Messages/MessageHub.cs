@@ -1,15 +1,24 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using api.Models;
 using api.Services.User;
+using api.Services.Trivia;
 using Microsoft.AspNetCore.SignalR;
 
 namespace api.Messages
 {
     public class MessageHub : Hub
     {
-        private readonly IUserService _userService;
-        public MessageHub(IUserService userService)
+        // private readonly IUserService _userService;
+        private readonly IGameService _gameService;
+        private readonly ITriviaService _triviaService;
+
+        public MessageHub(IGameService gameService, ITriviaService triviaService)
         {
-            _userService = userService;
+            _triviaService = triviaService;
+            _gameService = gameService;
         }
 
         // public async Task SendMessage(string user, string message, string roomCode)
@@ -19,33 +28,40 @@ namespace api.Messages
         //     await Clients.All.SendAsync("ReceiveMessage", user, message);
         // }
 
-        public async Task AddToGroup(string groupName)
+        public async Task AddToGroup(string roomCode)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
 
-            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has joined the group {groupName}.");
+            _gameService.JoinOrCreateNewGameRoom(roomCode, Context.ConnectionId);
+
+            _triviaService.InitializeTriviumGameRoom(4, roomCode);
+
+            await Clients.Group(roomCode).SendAsync("Send", $"{Context.ConnectionId} has joined the group {roomCode}.");
         }
 
-        // public async Task RemoveFromGroup(string groupName)
-        // {
-        //     await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-
-        //     await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has left the group {groupName}");
-        // }
-
-        public async Task GetUsersInRoom(string roomCode)
+        public void AssociateUserWithId(string userName, string roomCode)
         {
-            await Clients.All.SendAsync("EmitUsersList", _userService.GetRoomsUsers(roomCode));
+            _gameService.AssociateUserNameWithId(userName, roomCode, Context.ConnectionId);
         }
 
-        public async Task JoinRoom(string roomName)
+        public async Task GetConnectedUsers(string roomCode)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
+            List<Player> users = _gameService.GetUsersInRoom(roomCode);
+            Console.WriteLine($"Returning connected users : ");
+            if (users != null)
+            {
+                foreach (Player usr in users)
+                {
+                    Console.WriteLine($"{usr.Name}");
+                }
+            }
+            await Clients.Group(roomCode).SendAsync(roomCode, users);
         }
 
-        public Task LeaveRoom(string roomName)
+        public async Task StartGame(string roomCode)
         {
-            return Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);
+            Console.WriteLine($"starting game for users in room {roomCode}");
+            await Clients.Group(roomCode).SendAsync("StartGame");
         }
     }
 }

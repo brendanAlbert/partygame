@@ -8,9 +8,9 @@ namespace api.Services.Trivia
 {
     public interface ITriviaService
     {
-        // Task<List<TriviaObject>> GetTriviaObjects();
         Task<ServiceResponse<List<GetTriviaDto>>> GetTriviaObjects();
-        // // Task<ServiceResponse<List<GetTriviaDto>>> GetTriviaObjects();
-        // Task<ServiceResponse<GetTriviaDto>> GetTriviaObjectById(int id);
+        Task<List<TriviumRound>> GetTriviumRounds(int numberOfTrivia, string roomname);
+        TriviumRoundDto GetTriviumRoundDtoFromRoom(int roundNumber, string roomname);
+        void InitializeTriviumGameRoom(int numberOfTrivia, string roomname);
     }
 }

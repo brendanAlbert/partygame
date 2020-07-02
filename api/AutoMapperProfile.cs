@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using api.Dtos;
 using api.Models;
 using AutoMapper;
@@ -9,6 +10,9 @@ namespace api
         public AutoMapperProfile()
         {
             CreateMap<TriviaObject, GetTriviaDto>();
+            CreateMap<Trivium, TriviumAnswerDto>();
+            CreateMap<TriviumRound, TriviumRoundDto>();
+            CreateMap<Trivium, TriviumQuestionDto>();
         }
     }
 }

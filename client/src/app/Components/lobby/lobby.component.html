@@ -1,5 +1,5 @@
 <div
-  *ngIf="!codeEntered"
+  *ngIf="!roomCode"
   class="container mx-auto mt-5 text-center bg-light p-5 col-lg-6 col-sm-10 col-md-8"
 >
   <h1 class="mt-5">Enter Game Lobby Code</h1>
@@ -7,12 +7,13 @@
     class="mt-5 row d-flex flex-column justify-content-center align-items-center mb-3"
   >
     <label for="lobbycode" class="col-form-label">lobby code</label>
-    <div class="col-3">
+    <div class="col-5">
       <input
         #roomCode
         maxlength="4"
         type="text"
         class="form-control text-center"
+        style="text-transform: uppercase;"
         id="lobbycode"
         required
       />
@@ -27,30 +28,25 @@
   </button>
 </div>
 
-<div class="container text-center" *ngIf="codeEntered">
+<div class="container text-center" *ngIf="roomCode">
   <div class="col-12 mt-5 mx-auto">
     <span
-      class="badge rounded-pill bg-primary p-2 m-1"
+      class="badge rounded-pill p-2 m-1"
       *ngFor="let player of players"
-      >{{ player }}</span
+      [ngClass]="player.isAdmin ? 'bg-warning' : 'bg-primary'"
+      >{{ player.name }}</span
     >
-    <!-- <span class="badge rounded-pill bg-primary p-2 m-1">player 1</span>
-    <span class="badge rounded-pill bg-secondary p-2 m-1">player 2</span>
-    <span class="badge rounded-pill bg-success p-2 m-1">player 3</span>
-    <span class="badge rounded-pill bg-danger p-2 m-1">player 4</span>
-
-    <span class="badge rounded-pill bg-info p-2 m-1">player 5</span> -->
   </div>
   <h1 class="mt-5">Game Lobby - {{ roomCode }}</h1>
 
   <div *ngIf="!userAdded" class="">
-    <div class="col-4 mx-auto">
+    <div class="col-6 mx-auto">
       <label for="username" class="col-form-label">Username</label>
       <div class="">
         <input
           #userName
           type="text"
-          class="form-control my-1"
+          class="form-control col-4 my-1"
           id="username"
           (keyup.enter)="addUserToLobby(userName.value); userName.value = ''"
         />
@@ -64,5 +60,15 @@
         enter!
       </button>
     </div>
+  </div>
+
+  <div *ngIf="userAdded && player.isAdmin">
+    <button
+      type="submit"
+      (click)="initiateStartGame()"
+      class="btn btn-success mt-2"
+    >
+      Start Game!
+    </button>
   </div>
 </div>

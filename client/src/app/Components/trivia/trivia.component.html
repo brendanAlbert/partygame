@@ -1,7 +1,8 @@
-<div class="container vh-100 bg-light text-center">
+<div class="container bg-light text-center">
   <div class="progress">
     <div
-      class="progress-bar bg-success progress-bar-striped"
+      #progressBar
+      class="progress-bar mt-5 bg-success progress-bar-striped"
       role="progressbar"
       style="width: 100%;"
     ></div>
@@ -9,40 +10,41 @@
   <div class="h-100 d-flex justify-content-around flex-column">
     <div class="row col-11 mx-auto">
       <div class="row mx-auto m-3">
-        <ul class="d-flex flex-wrap mx-auto m-3">
-          <li class="col-4">player 1</li>
-          <li class="col-4">player 2</li>
-          <li class="col-4">player 3</li>
-          <li class="col-4">player 4</li>
-          <li class="col-4">player 5</li>
-        </ul>
+        <div class="col-12 mt-5 mx-auto">
+          <span
+            class="badge rounded-pill p-2 m-1"
+            *ngFor="let player of players"
+            [ngClass]="player.isAdmin ? 'bg-warning' : 'bg-primary'"
+            >{{ player.name }}</span
+          >
+        </div>
       </div>
       <h4 class="border border-primary rounded p-3">
-        Who said - "Sometimes a cigar is just a cigar?"
+        {{ questionTrivium.question }}
       </h4>
     </div>
-    <div class="row col-12 mx-auto">
+    <div class="row mt-5 col-12 mx-auto">
       <div class="container">
         <div class="row g-2">
           <div class="col-6">
-            <h4 class="p-3 border text-light rounded-pill bg-primary">
-              Custom column padding
-            </h4>
+            <p class="p-3 border text-light rounded-pill bg-primary">
+              {{ answerOptions[0].answer }}
+            </p>
           </div>
           <div class="col-6">
-            <h4 class="p-3 border text-light rounded-pill bg-warning">
-              Custom column padding
-            </h4>
+            <p class="p-3 border text-light rounded-pill bg-warning">
+              {{ answerOptions[1].answer }}
+            </p>
           </div>
           <div class="col-6">
-            <h4 class="p-3 border text-light rounded-pill bg-info">
-              Custom column padding
-            </h4>
+            <p class="p-3 border text-light rounded-pill bg-info">
+              {{ answerOptions[2].answer }}
+            </p>
           </div>
           <div class="col-6">
-            <h4 class="p-3 border text-light rounded-pill bg-danger">
-              Custom column padding
-            </h4>
+            <p class="p-3 border text-light rounded-pill bg-danger">
+              {{ answerOptions[3].answer }}
+            </p>
           </div>
         </div>
       </div>

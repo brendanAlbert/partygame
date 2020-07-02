@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from '../../Services/message.service';
 import { HttpClient } from '@angular/common/http';
+import { IPlayer } from 'src/app/Models/Iplayer';
+import { Player } from 'src/app/Models/player';
+import { Router, NavigationExtras } from '@angular/router';
+import { ApiService } from '../../Services/api.service';
 
 @Component({
   selector: 'app-lobby',
@@ -9,83 +13,81 @@ import { HttpClient } from '@angular/common/http';
 })
 export class LobbyComponent implements OnInit {
   roomCode: string;
-  codeEntered: boolean = false;
   userAdded: boolean = false;
-
-  players: string[] = [
-    'player 1',
-    'player 2',
-    // 'player 3',
-    // 'player 4',
-    // 'player 5',
-  ];
-
-  colors: string[] = [
-    'bg-primary',
-    'bg-warning',
-    'bg-danger',
-    'bg-info',
-    'bg-dark',
-    'bg-secondary',
-  ];
-
-  // {{ getRandomColor() }}
+  player: IPlayer = new Player();
+  players: IPlayer[] = [];
+  navigationExtras: NavigationExtras = {};
 
   constructor(
+    private apiService: ApiService,
     private _messageService: MessageService,
-    private http: HttpClient
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    // this.startHttpRequest();
     this._messageService.startConnection();
     this._messageService.ListenForAddToGroup();
+    this._messageService.ListenForStartGame();
+    this.subscribeToEvents();
   }
-
-  //   ngOnDestroy(): void {
-  //     this._messageService.LeaveGroup(this.roomCode);
-  //   }
-
-  //   private startHttpRequest = () => {
-  //     this.http.get(this._messageService.msgHubUrl).subscribe((res) => {
-  //       console.log(res);
-  //     });
-  //   };
-
-  sendMessage = (user: string, message: string = '', roomCode: string) => {
-    this._messageService.sendMessage(user, message, roomCode);
-  };
 
   enterGameLobby(roomCode: string): void {
-    this.codeEntered = true;
-    // this._messageService.messageListener();
+    roomCode = roomCode.toUpperCase();
     this.roomCode = roomCode;
-    // this.players = this._messageService.emittedUsers();
+    this._messageService.userListener(roomCode);
     this._messageService.AddToGroup(roomCode);
-    // console.log('this . players = ');
-    // console.log(this.players);
+    this.players = this._messageService.fetchUsers();
+    this._messageService.getConnectedUsers(this._messageService.getRoomCode());
   }
 
-  //   getUsersInRoom(roomCode: string) {
-  //   }
-
-  //   getRandomColor(): string {
-  //     return this.colors[Math.floor(Math.random() * this.colors.length)];
-  //   }
-
-  addUserToLobby(player: string) {
-    console.log(`pushing player ${player} to players list`);
-    this.players.push(player);
+  addUserToLobby(playerName: string) {
+    this._messageService.associateUserWithId(
+      playerName,
+      this._messageService.getRoomCode()
+    );
+    this.player.name = playerName;
     this.userAdded = true;
+    this.getUsers();
+  }
 
-    // this.sendMessage(
-    //   player,
-    //   `player ${player} has joined the lobby`,
-    //   this.roomCode
-    // );
-    // console.log(`players list = ${this.players}`);
-    // setTimeout(() => {
-    //   this._messageService.getUsersInRoom(this.roomCode);
-    // }, 1000);
+  getUsers = () => {
+    this._messageService.getConnectedUsers(this._messageService.getRoomCode());
+    setTimeout(() => {
+      console.log('players list updated');
+      this.players = this._messageService.fetchUsers();
+      this.setAdminStatus();
+    }, 1000);
+  };
+
+  private subscribeToEvents(): void {
+    this._messageService.incomingPlayer.subscribe((players: IPlayer[]) => {
+      this.players = players;
+    });
+
+    this._messageService.startGame.subscribe(() => {
+      this.startGame();
+    });
+  }
+
+  private setAdminStatus = () => {
+    this.players.forEach((player) => {
+      if (player.name == this.player.name && player.isAdmin) {
+        this.player.isAdmin = true;
+      }
+    });
+  };
+
+  private startGame() {
+    this.navigationExtras = {
+      state: {
+        roomCode: this.roomCode,
+      },
+    };
+    this.router.navigate([`/trivia`], this.navigationExtras);
+  }
+
+  public initiateStartGame() {
+    console.log('Admin has started the game!');
+    this._messageService.initiateStartGame();
   }
 }
