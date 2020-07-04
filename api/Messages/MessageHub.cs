@@ -6,6 +6,7 @@ using api.Models;
 using api.Services.User;
 using api.Services.Trivia;
 using Microsoft.AspNetCore.SignalR;
+using api.Dtos;
 
 namespace api.Messages
 {
@@ -14,9 +15,11 @@ namespace api.Messages
         // private readonly IUserService _userService;
         private readonly IGameService _gameService;
         private readonly ITriviaService _triviaService;
+        private readonly IGameRoomService _gameRoomService;
 
-        public MessageHub(IGameService gameService, ITriviaService triviaService)
+        public MessageHub(IGameService gameService, ITriviaService triviaService, IGameRoomService gameRoomService)
         {
+            _gameRoomService = gameRoomService;
             _triviaService = triviaService;
             _gameService = gameService;
         }
@@ -62,6 +65,57 @@ namespace api.Messages
         {
             Console.WriteLine($"starting game for users in room {roomCode}");
             await Clients.Group(roomCode).SendAsync("StartGame");
+        }
+
+        public async Task PlayerAnswered(Player player, int answerId, int roundNumber, string roomCode)
+        {
+            // update game object with players answerId to the question in roundNumber
+            Console.WriteLine($"message received with deets: {player} {roomCode} {answerId} {roundNumber}");
+            // Console.WriteLine($"message received with deets: {player.Name} {answer} {roundNumber}");
+            PlayerAnswerDto padto = new PlayerAnswerDto();
+            // padto.Player.Name = player;
+            padto.Player = player;
+            padto.RoomCode = roomCode;
+            padto.AnswerId = answerId;
+            padto.RoundNumber = roundNumber;
+            _gameRoomService.PlayerAnswered(padto);
+
+            await Clients.Group(roomCode).SendAsync("AnswerSubmitted");
+
+            // if number of players answered == number of players in game, call EndRound
+            if (_gameRoomService.HaveAllPlayersAnswered(roomCode, roundNumber))
+            {
+                Console.WriteLine("all players have answered, ending round");
+                await EndRound(roomCode, roundNumber);
+            }
+        }
+
+        public async Task GetUsersWhoAnswered(string roomCode, int roundNumber)
+        {
+            await Clients.Group(roomCode).SendAsync("UsersWhoAnswered",
+            _gameRoomService.GetPlayersWhoAnsweredInRound(roomCode, roundNumber));
+        }
+
+        public async Task EndRound(string roomCode, int roundNumber)
+        {
+            await Clients.Group(roomCode).SendAsync("RoundEndedShowScore");
+        }
+
+        public async Task RoundTimeUp(string roomCode, int roundNumber)
+        {
+            _gameRoomService.SetRoundComplete(roomCode, roundNumber);
+            await EndRound(roomCode, roundNumber);
+        }
+
+        public async Task FetchRoundResults(string roomCode, int roundNumber)
+        {
+            Console.WriteLine("getting round results to return to the front");
+            RoundResultsDto roundResults = _gameRoomService.GetRoundResults(roomCode, roundNumber);
+            Console.WriteLine($"round results - {roundResults}");
+            if (roundResults != null)
+            {
+                await Clients.Group(roomCode).SendAsync("RoundResults", roundResults);
+            }
         }
     }
 }

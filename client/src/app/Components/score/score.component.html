@@ -1,0 +1,62 @@
+<div class="container">
+  <div class="col-12 mt-5">
+    <div *ngIf="scoreResults" class="col-10 mx-auto">
+      <h4 class="text-center">brains with some wrinkle</h4>
+
+      <h5 class="border border-primary p-1 text-center">
+        {{ scoreResults?.question }}
+      </h5>
+      <h5 class="border border-success p-1 text-center">
+        {{ scoreResults?.answer }}
+      </h5>
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th scope="col">Player</th>
+            <th scope="col">Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let player of scoreResults.players">
+            <th *ngIf="player.answer == scoreResults.answer" scope="row">
+              {{ player.name }}
+            </th>
+            <td *ngIf="player.answer == scoreResults.answer" colspan="2">
+              {{ player.score }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <h4 class="text-center mt-5">smooth brains</h4>
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th scope="col">Player</th>
+            <th scope="col">Score</th>
+            <th scope="col">Answer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let player of scoreResults.players">
+            <th *ngIf="player.answer != scoreResults.answer" scope="row">
+              {{ player.name }}
+            </th>
+            <td *ngIf="player.answer != scoreResults.answer">
+              {{ player.score }}
+            </td>
+            <td
+              *ngIf="player.answer != scoreResults.answer"
+              class="border border-danger"
+            >
+              {{ player.answer }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="!scoreResults">
+        Loading Scores...
+      </div>
+    </div>
+  </div>
+</div>

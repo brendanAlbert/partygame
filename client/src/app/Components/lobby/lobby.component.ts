@@ -55,6 +55,7 @@ export class LobbyComponent implements OnInit {
     setTimeout(() => {
       console.log('players list updated');
       this.players = this._messageService.fetchUsers();
+      console.log(this.players);
       this.setAdminStatus();
     }, 1000);
   };
@@ -81,13 +82,13 @@ export class LobbyComponent implements OnInit {
     this.navigationExtras = {
       state: {
         roomCode: this.roomCode,
+        player: this.player,
       },
     };
     this.router.navigate([`/trivia`], this.navigationExtras);
   }
 
   public initiateStartGame() {
-    console.log('Admin has started the game!');
     this._messageService.initiateStartGame();
   }
 }

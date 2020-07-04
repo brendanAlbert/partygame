@@ -1,53 +1,70 @@
-<div class="container bg-light text-center">
-  <div class="progress">
-    <div
-      #progressBar
-      class="progress-bar mt-5 bg-success progress-bar-striped"
-      role="progressbar"
-      style="width: 100%;"
-    ></div>
+<div class="container text-center col-12">
+  <div class="mt-5">
+    <app-progressbar></app-progressbar>
   </div>
-  <div class="h-100 d-flex justify-content-around flex-column">
-    <div class="row col-11 mx-auto">
+  <div
+    *ngIf="answerOptions && answerOptions.length > 0"
+    class="d-flex justify-content-around flex-column"
+  >
+    <div class="row col-12 mx-auto">
       <div class="row mx-auto m-3">
         <div class="col-12 mt-5 mx-auto">
           <span
             class="badge rounded-pill p-2 m-1"
-            *ngFor="let player of players"
+            *ngFor="let player of playersWhoAnswered"
             [ngClass]="player.isAdmin ? 'bg-warning' : 'bg-primary'"
             >{{ player.name }}</span
           >
         </div>
       </div>
       <h4 class="border border-primary rounded p-3">
-        {{ questionTrivium.question }}
+        {{ questionTrivium?.question }}
       </h4>
     </div>
-    <div class="row mt-5 col-12 mx-auto">
+    <div *ngIf="!answerPicked" class="row mt-5 col-12 mx-auto">
       <div class="container">
         <div class="row g-2">
           <div class="col-6">
-            <p class="p-3 border text-light rounded-pill bg-primary">
+            <p
+              (click)="pickAnswer(answerOptions[0].id)"
+              class="p-3 border text-light rounded-pill bg-primary"
+            >
               {{ answerOptions[0].answer }}
             </p>
           </div>
           <div class="col-6">
-            <p class="p-3 border text-light rounded-pill bg-warning">
+            <p
+              (click)="pickAnswer(answerOptions[1].id)"
+              class="p-3 border text-light rounded-pill bg-warning"
+            >
               {{ answerOptions[1].answer }}
             </p>
           </div>
           <div class="col-6">
-            <p class="p-3 border text-light rounded-pill bg-info">
+            <p
+              (click)="pickAnswer(answerOptions[2].id)"
+              class="p-3 border text-light rounded-pill bg-info"
+            >
               {{ answerOptions[2].answer }}
             </p>
           </div>
           <div class="col-6">
-            <p class="p-3 border text-light rounded-pill bg-danger">
+            <p
+              (click)="pickAnswer(answerOptions[3].id)"
+              class="p-3 border text-light rounded-pill bg-danger"
+            >
               {{ answerOptions[3].answer }}
             </p>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div *ngIf="!answerOptions">
+    <h5>Loading Question and Answers...</h5>
+    <div class="spinner-grow text-primary" role="status">
+      <span class="sr-only">Loading...</span>
     </div>
   </div>
 </div>

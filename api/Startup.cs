@@ -42,7 +42,10 @@ namespace partygame
                 .AllowCredentials());
                 // .SetIsOriginAllowed(host => true));
             });
-            services.AddSignalR();
+            services.AddSignalR(options =>
+           {
+               options.EnableDetailedErrors = true;
+           });
             // services.AddScoped<IUserService, UserService>();
             services.AddScoped<IGameService, GameService>();
             services.AddSingleton<IGameRoomService, GameRoomService>();

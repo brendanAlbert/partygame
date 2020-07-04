@@ -1,10 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ApiService } from 'src/app/Services/api.service';
-import { Router } from '@angular/router';
+import { Component, OnInit, EventEmitter } from '@angular/core';
+
+import { Router, NavigationExtras } from '@angular/router';
 
 import { ITrivium } from '../../Models/ITrivium';
 import { MessageService } from 'src/app/Services/message.service';
+import { GameService } from 'src/app/Services/game.service';
 import { IPlayer } from 'src/app/Models/Iplayer';
+import { ITriviumRound } from 'src/app/Models/ITriviumRound';
 
 @Component({
   selector: 'app-trivia',
@@ -12,79 +14,103 @@ import { IPlayer } from 'src/app/Models/Iplayer';
   styleUrls: ['./trivia.component.sass'],
 })
 export class TriviaComponent implements OnInit {
-  @ViewChild('progressBar') pb: ElementRef;
-  question: string = '';
   questionTrivium: ITrivium;
+  triviumRound: ITriviumRound;
   answerOptions: ITrivium[];
   roomCode: string;
-  roundNumber: number = 0;
-  players: IPlayer[] = [];
+  player: IPlayer;
+  players: IPlayer[];
+  playersWhoAnswered: IPlayer[] = [];
+  answerPicked: boolean = false;
 
-  shuffledTrivia: ITrivium[];
+  navigationExtras: NavigationExtras = {};
 
   constructor(
-    private apiService: ApiService,
+    private _gameService: GameService,
     private router: Router,
     private _messageService: MessageService
   ) {
     let navigation = this.router.getCurrentNavigation();
     const state = navigation.extras.state as {
       roomCode: string;
+      player: IPlayer;
     };
-    // .extras.state.roomCode('roomCode');
-    console.log(`room code received from lobby component = ${state.roomCode}`);
     this.roomCode = state.roomCode;
+    this.player = state.player;
+
+    this.subscribeToEvents();
   }
 
   ngOnInit(): void {
     this.getUsers();
-    this.apiService
-      .fetchTrivia(this.roomCode, this.roundNumber)
-      .subscribe((data: any) => {
-        this.questionTrivium = data.questionTrivium;
-        // this.question = data[0].answerTrivium.question;
-        this.answerOptions = data.wrongTrivia;
-        //   console.log(data['data'][0]);
-        //   console.log(this.question);
-        console.info(data);
-        //   console.log(this.answerOptions);
-      });
-  }
+    this._gameService.startRound(this._messageService.getRoomCode());
 
-  ngAfterViewInit() {
-    const timeLeftTimer = () => {
-      //   let w = this.pb.style.width;
-      let w = this.pb.nativeElement.style.width;
-      // this.renderer.setStyle(this.pb.nativeElement, 'width', )
-      w = parseInt(w);
-      // 100 % / 15 seconds = 6.6666667
-      // 100% / 25 secs = 4
-      w -= 4;
-      if (w < 30) {
-        this.pb.nativeElement.classList.add('bg-warning');
-        this.pb.nativeElement.classList.remove('bg-success');
-      }
-      if (w < 15) {
-        this.pb.nativeElement.classList.remove('bg-warning');
-        this.pb.nativeElement.classList.add('bg-danger');
-      }
-
-      //   console.log(w);
-      this.pb.nativeElement.style.width = w + '%';
-
-      if (w <= 1) {
-        clearInterval(tmr);
-        return;
-      }
-    };
-    let tmr = setInterval(timeLeftTimer, 1000);
+    setTimeout(() => {
+      this.triviumRound = this._gameService.getRound();
+      this.questionTrivium = this.triviumRound.questionTrivium;
+      this.answerOptions = this.triviumRound.wrongTrivia;
+      // here we trigger the progress bar
+      this._messageService.emitStartRound();
+    }, 1500);
   }
 
   getUsers = () => {
     this._messageService.getConnectedUsers(this._messageService.getRoomCode());
     setTimeout(() => {
-      console.log('players list updated');
       this.players = this._messageService.fetchUsers();
     }, 100);
   };
+
+  pickAnswer(answerId: string) {
+    console.log(`picked answer ${answerId}`);
+    this.answerPicked = true;
+    this._messageService.playerAnswered(
+      this.player,
+      parseInt(answerId),
+      this.triviumRound.roundNumber
+    );
+    // console.log(
+    //   `this.players.length -1 : ${
+    //     this.players.length - 1
+    //   } this.playersWhoAnswered.length  : ${this.playersWhoAnswered.length}`
+    // );
+    // // console.log(this.players.length === this.playersWhoAnswered.length - 1);
+    // if (this.players.length - 1 === this.playersWhoAnswered.length) {
+    // //   this._messageService.emitStopRound();
+    // }
+  }
+
+  private subscribeToEvents(): void {
+    this._messageService.answeredPlayers.subscribe((players: IPlayer[]) => {
+      this.playersWhoAnswered = players;
+    });
+
+    this._messageService.ListenRoundEndedShowScore();
+    this._messageService.ListenForAnswerSubmitted();
+    this._messageService.ListenForUsersWhoAnswered();
+
+    this._messageService.visitScore.subscribe(() => {
+      this._messageService.fetchRoundResults();
+    });
+
+    this._messageService.listenFetchRoundResults();
+
+    this._messageService.roundResults.subscribe((roundResults) => {
+      console.log('round results');
+      console.log(roundResults);
+      this.viewScoreScreen(roundResults);
+    });
+    // this._messageService.endRound.subscribe()
+  }
+
+  public viewScoreScreen(roundResults) {
+    this.navigationExtras = {
+      state: {
+        roundResults: roundResults,
+        // player: this.player,
+      },
+    };
+
+    this.router.navigate([`/score`], this.navigationExtras);
+  }
 }
