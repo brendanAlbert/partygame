@@ -1,6 +1,15 @@
 <div class="container text-center col-12">
   <div class="mt-5">
-    <app-progressbar></app-progressbar>
+    <div class="progress">
+      <div
+        #progressBar
+        class="progress-bar bg-success progress-bar-striped"
+        role="progressbar"
+        style="width: 100%;"
+      >
+        {{ secondsLeft }}
+      </div>
+    </div>
   </div>
   <div
     *ngIf="answerOptions && answerOptions.length > 0"
@@ -18,7 +27,7 @@
         </div>
       </div>
       <h4 class="border border-primary rounded p-3">
-        {{ questionTrivium?.question }}
+        {{ question }}
       </h4>
     </div>
     <div *ngIf="!answerPicked" class="row mt-5 col-12 mx-auto">

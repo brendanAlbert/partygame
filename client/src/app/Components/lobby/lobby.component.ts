@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from '../../Services/message.service';
-import { HttpClient } from '@angular/common/http';
+
 import { IPlayer } from 'src/app/Models/Iplayer';
-import { Player } from 'src/app/Models/player';
+
 import { Router, NavigationExtras } from '@angular/router';
-import { ApiService } from '../../Services/api.service';
+
+import { GameService } from 'src/app/Services/game.service';
+import { Player } from 'src/app/Models/player';
 
 @Component({
   selector: 'app-lobby',
@@ -14,15 +16,17 @@ import { ApiService } from '../../Services/api.service';
 export class LobbyComponent implements OnInit {
   roomCode: string;
   userAdded: boolean = false;
-  player: IPlayer = new Player();
+  player: IPlayer;
   players: IPlayer[] = [];
   navigationExtras: NavigationExtras = {};
 
   constructor(
-    private apiService: ApiService,
+    // private _gameService: GameService,
     private _messageService: MessageService,
     private router: Router
-  ) {}
+  ) {
+    this.player = new Player();
+  }
 
   ngOnInit(): void {
     this._messageService.startConnection();
@@ -33,11 +37,12 @@ export class LobbyComponent implements OnInit {
 
   enterGameLobby(roomCode: string): void {
     roomCode = roomCode.toUpperCase();
+    // this._gameService.setRoomCode(roomCode);
     this.roomCode = roomCode;
     this._messageService.userListener(roomCode);
     this._messageService.AddToGroup(roomCode);
     this.players = this._messageService.fetchUsers();
-    this._messageService.getConnectedUsers(this._messageService.getRoomCode());
+    this._messageService.getConnectedUsers();
   }
 
   addUserToLobby(playerName: string) {
@@ -51,7 +56,7 @@ export class LobbyComponent implements OnInit {
   }
 
   getUsers = () => {
-    this._messageService.getConnectedUsers(this._messageService.getRoomCode());
+    this._messageService.getConnectedUsers();
     setTimeout(() => {
       console.log('players list updated');
       this.players = this._messageService.fetchUsers();

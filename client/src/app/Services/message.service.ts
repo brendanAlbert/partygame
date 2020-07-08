@@ -8,18 +8,18 @@ import { IPlayer } from '../Models/Iplayer';
 export class MessageService {
   private hubConnection: signalR.HubConnection;
   private roomUsers: IPlayer[] = [];
-  //   private usersWhoAnswered: IPlayer[] = [];
   private roomCode: string = '';
-  private roundNumber: number;
-  private roundResultsFetched: boolean = false;
-  private roundResultsReceived: boolean = false;
   incomingPlayer = new EventEmitter<IPlayer[]>();
   answeredPlayers = new EventEmitter<IPlayer[]>();
   startGame = new EventEmitter();
   startRound = new EventEmitter();
-  endRound = new EventEmitter();
+  //   endRound = new EventEmitter();
   visitScore = new EventEmitter();
   roundResults = new EventEmitter();
+  nextRound = new EventEmitter();
+  stopTimers = new EventEmitter();
+
+  constructor() {}
 
   //   public msgHubUrl = 'http://localhost:5000/msghub';
   public msgHubUrl = 'http://192.168.0.12:5000/msghub';
@@ -33,15 +33,31 @@ export class MessageService {
       .start()
       .then(() => console.log('connection started'))
       .catch((err) => console.log('error while starting connection ' + err));
+
+    this.hubConnection.on('FetchedNextRound', (nextRound: any) => {
+      console.log('FETCHED NEXT ROUND : ');
+      this.startRound.emit(nextRound);
+    });
+
+    this.hubConnection.on('RoundEndedShowScore', () => {
+      console.log('calling this._messageService.visitScore.emit()');
+      this.stopTimers.emit();
+      //   this.fetchRoundResults(); // moved to trivia b.c. we only want admin to fetch
+    });
+
+    this.hubConnection.on('RoundResults', (roundResults: any) => {
+      console.log('Round Results received from backend : ');
+      this.roundResults.emit(roundResults);
+    });
+
+    this.hubConnection.on('UsersWhoAnswered', (players: IPlayer[]) => {
+      console.log('EMITTING PLAYERS WHO HAVE ANSWERED ######');
+      this.answeredPlayers.emit(players);
+    });
   };
 
-  public ListenRoundEndedShowScore() {
-    this.hubConnection.on('RoundEndedShowScore', () => {
-      console.log('Emitting Stop Round.');
-      this.endRound.emit();
-
-      this.visitScore.emit();
-    });
+  public stopConnection() {
+    this.hubConnection.stop();
   }
 
   public ListenForAddToGroup() {
@@ -56,41 +72,28 @@ export class MessageService {
     });
   }
 
-  public ListenForAnswerSubmitted() {
-    this.hubConnection.on('AnswerSubmitted', () => {
-      this.getUsersWhoAnswered(this.getRoomCode());
-    });
-  }
-
-  public ListenForUsersWhoAnswered() {
-    this.hubConnection.on('UsersWhoAnswered', (players: IPlayer[]) => {
-      this.answeredPlayers.emit(players);
-    });
-  }
-
-  public getUsersWhoAnswered(roomCode: string) {
+  public playerAnswered(player: IPlayer, answerId: number) {
     this.hubConnection
-      .invoke('GetUsersWhoAnswered', roomCode, this.roundNumber)
+      .invoke('PlayerAnswered', player, answerId, this.roomCode)
       .catch((err) => console.error(err.toString()));
   }
 
   public AddToGroup = (groupName: string) => {
     this.setRoomCode(groupName);
-    this.setRoundNumber(0);
     this.hubConnection.invoke('AddToGroup', groupName).catch(function (err) {
       console.log(err.toString());
     });
   };
 
-  public getConnectedUsers(groupName: string) {
+  public getConnectedUsers() {
     this.hubConnection
-      .invoke('GetConnectedUsers', groupName)
+      .invoke('GetConnectedUsers', this.getRoomCode())
       .catch((err) => console.error(err.toString()));
   }
 
   public userListener = (roomCode: string) => {
     this.hubConnection.on(roomCode, (users) => {
-      console.log('users : ');
+      console.log('users from message service : ');
       console.log(users);
       this.roomUsers = users;
       this.incomingPlayer.emit(users);
@@ -120,57 +123,24 @@ export class MessageService {
       .catch((err) => console.error(err.toString()));
   };
 
-  public emitStartRound() {
-    this.startRound.emit();
-  }
-
-  //   public emitStopRound() {
-  //     // this.endRound.emit();
+  //   public roundTimeUp() {
+  //     console.log('invoking RoundTimeUp');
   //     this.hubConnection
-  //       .invoke('EndRound', this.getRoomCode(), this.roundNumber)
+  //       .invoke('EndRound', this.getRoomCode())
   //       .catch((err) => console.error(err.toString()));
   //   }
 
-  public roundTimeUp() {
-    console.log('invoking RoundTimeUp');
-    this.hubConnection
-      .invoke('RoundTimeUp', this.getRoomCode(), this.roundNumber)
-      .catch((err) => console.error(err.toString()));
-  }
-
-  private setRoundNumber(roundNumber: number) {
-    this.roundNumber = roundNumber;
-  }
-
-  public playerAnswered(
-    player: IPlayer,
-    answerId: number,
-    roundNumber: number
-  ) {
-    this.hubConnection
-      .invoke('PlayerAnswered', player, answerId, roundNumber, this.roomCode)
-      .catch((err) => console.error(err.toString()));
-  }
-
   public fetchRoundResults() {
-    if (!this.roundResultsFetched) {
-      this.roundResultsFetched = true;
-      console.log('fetching round results ...');
-      this.hubConnection
-        .invoke('FetchRoundResults', this.getRoomCode(), this.roundNumber)
-        .catch((err) => console.error(err.toString()));
-    }
+    console.log('fetching round results ...');
+    this.hubConnection
+      .invoke('FetchRoundResults', this.getRoomCode())
+      .catch((err) => console.error(err.toString()));
   }
 
-  public listenFetchRoundResults() {
-    console.log('Round Results received from backend : ');
-    this.hubConnection.on('RoundResults', (roundResults: any) => {
-      console.log('Round Results received from backend : ');
-      console.log('roundResults');
-      if (!this.roundResultsReceived) {
-        this.roundResultsReceived = true;
-        this.roundResults.emit(roundResults);
-      }
-    });
+  public fetchNextRound() {
+    console.log('FETCHING NEXT ROUND');
+    this.hubConnection
+      .invoke('FetchNextRound', this.roomCode)
+      .catch((err) => console.error(err.toString()));
   }
 }

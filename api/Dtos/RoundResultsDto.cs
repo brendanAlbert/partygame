@@ -4,6 +4,7 @@ namespace api.Dtos
 {
     public class RoundResultsDto
     {
+        public bool LastRound { get; set; } = false;
         public string Question { get; set; }
         public string Answer { get; set; }
         public List<string> OtherAnswers { get; set; } = new List<string>();

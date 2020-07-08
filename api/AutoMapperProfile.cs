@@ -9,7 +9,7 @@ namespace api
     {
         public AutoMapperProfile()
         {
-            CreateMap<TriviaObject, GetTriviaDto>();
+            // CreateMap<TriviaObject, GetTriviaDto>();
             CreateMap<Trivium, TriviumAnswerDto>();
             CreateMap<TriviumRound, TriviumRoundDto>();
             CreateMap<Trivium, TriviumQuestionDto>();

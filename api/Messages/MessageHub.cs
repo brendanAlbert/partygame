@@ -12,7 +12,6 @@ namespace api.Messages
 {
     public class MessageHub : Hub
     {
-        // private readonly IUserService _userService;
         private readonly IGameService _gameService;
         private readonly ITriviaService _triviaService;
         private readonly IGameRoomService _gameRoomService;
@@ -23,13 +22,6 @@ namespace api.Messages
             _triviaService = triviaService;
             _gameService = gameService;
         }
-
-        // public async Task SendMessage(string user, string message, string roomCode)
-        // {
-        //     _userService.AddUserToRoom(user, roomCode);
-
-        //     await Clients.All.SendAsync("ReceiveMessage", user, message);
-        // }
 
         public async Task AddToGroup(string roomCode)
         {
@@ -50,71 +42,91 @@ namespace api.Messages
         public async Task GetConnectedUsers(string roomCode)
         {
             List<Player> users = _gameService.GetUsersInRoom(roomCode);
-            Console.WriteLine($"Returning connected users : ");
-            if (users != null)
-            {
-                foreach (Player usr in users)
-                {
-                    Console.WriteLine($"{usr.Name}");
-                }
-            }
             await Clients.Group(roomCode).SendAsync(roomCode, users);
         }
 
         public async Task StartGame(string roomCode)
         {
-            Console.WriteLine($"starting game for users in room {roomCode}");
             await Clients.Group(roomCode).SendAsync("StartGame");
         }
 
-        public async Task PlayerAnswered(Player player, int answerId, int roundNumber, string roomCode)
+        public async Task PlayerAnswered(Player player, int answerId, string roomCode)
         {
             // update game object with players answerId to the question in roundNumber
-            Console.WriteLine($"message received with deets: {player} {roomCode} {answerId} {roundNumber}");
+            Console.WriteLine($"message received with deets: {player} {roomCode} {answerId}");
             // Console.WriteLine($"message received with deets: {player.Name} {answer} {roundNumber}");
             PlayerAnswerDto padto = new PlayerAnswerDto();
             // padto.Player.Name = player;
             padto.Player = player;
             padto.RoomCode = roomCode;
             padto.AnswerId = answerId;
-            padto.RoundNumber = roundNumber;
+            // padto.RoundNumber = roundNumber;
             _gameRoomService.PlayerAnswered(padto);
 
-            await Clients.Group(roomCode).SendAsync("AnswerSubmitted");
+            // await Clients.Group(roomCode).SendAsync("AnswerSubmitted");
+            List<PlayerDto> players_whove_answered = _gameRoomService.GetPlayersWhoAnsweredInRound(roomCode);
+            foreach (PlayerDto p in players_whove_answered)
+            {
+                Console.WriteLine($"{p.Name} has answered");
+            }
+            await Clients.Group(roomCode).SendAsync("UsersWhoAnswered", players_whove_answered);
 
             // if number of players answered == number of players in game, call EndRound
-            if (_gameRoomService.HaveAllPlayersAnswered(roomCode, roundNumber))
+            if (_gameRoomService.HaveAllPlayersAnswered(roomCode))
             {
-                Console.WriteLine("all players have answered, ending round");
-                await EndRound(roomCode, roundNumber);
+                Console.WriteLine($"all players have answered, ending round");
+                _gameRoomService.SetRoundComplete(roomCode);
+                await Clients.Group(roomCode).SendAsync("RoundEndedShowScore");
             }
         }
 
-        public async Task GetUsersWhoAnswered(string roomCode, int roundNumber)
-        {
-            await Clients.Group(roomCode).SendAsync("UsersWhoAnswered",
-            _gameRoomService.GetPlayersWhoAnsweredInRound(roomCode, roundNumber));
-        }
+        // public async Task EndRound(string roomCode)
+        // {
+        //     // if (!_gameRoomService.IsRoundComplete(roomCode))
+        //     // {
+        //     _gameRoomService.SetRoundComplete(roomCode);
+        //     await Clients.Group(roomCode).SendAsync("RoundEndedShowScore");
 
-        public async Task EndRound(string roomCode, int roundNumber)
-        {
-            await Clients.Group(roomCode).SendAsync("RoundEndedShowScore");
-        }
+        //     // }
+        // }
 
-        public async Task RoundTimeUp(string roomCode, int roundNumber)
+        public async Task FetchNextRound(string roomCode)
         {
-            _gameRoomService.SetRoundComplete(roomCode, roundNumber);
-            await EndRound(roomCode, roundNumber);
-        }
-
-        public async Task FetchRoundResults(string roomCode, int roundNumber)
-        {
-            Console.WriteLine("getting round results to return to the front");
-            RoundResultsDto roundResults = _gameRoomService.GetRoundResults(roomCode, roundNumber);
-            Console.WriteLine($"round results - {roundResults}");
-            if (roundResults != null)
+            if (!_gameRoomService.GameIsOver(roomCode))
             {
-                await Clients.Group(roomCode).SendAsync("RoundResults", roundResults);
+                TriviumRoundDto triviumRoundDto = _gameRoomService.FetchNextRound(roomCode);
+                foreach (var wt in triviumRoundDto.WrongTrivia)
+                {
+                    Console.WriteLine($"trivia = {wt.Answer}");
+                }
+                await Clients.Group(roomCode).SendAsync("FetchedNextRound", triviumRoundDto);
+            }
+            else
+            {
+                Console.WriteLine("game is over!");
+            }
+        }
+
+        public async Task FetchRoundResults(string roomCode)
+        {
+            if (!_gameRoomService.GameIsOver(roomCode))
+            {
+                Console.WriteLine("Have this rooms results been fetched for this round?");
+                bool fetched = _gameRoomService.HasRoundBeenFetched(roomCode);
+                if (!fetched)
+                {
+                    Console.WriteLine("Not yet fetched , getting round results to return to the front");
+                    RoundResultsDto roundResults = _gameRoomService.GetRoundResults(roomCode);
+                    await Clients.Group(roomCode).SendAsync("RoundResults", roundResults);
+                }
+                else
+                {
+                    Console.WriteLine("This round's results have already been fetched.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Game is over");
             }
         }
     }

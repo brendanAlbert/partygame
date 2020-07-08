@@ -8,34 +8,47 @@ import { MessageService } from 'src/app/Services/message.service';
 })
 export class ProgressbarComponent implements OnInit {
   @ViewChild('progressBar') pb: ElementRef;
-  roomCode: string;
   timer: any;
   secondsLeft: number = 25;
   timerStopped: boolean = false;
 
-  constructor(private _messageService: MessageService) {}
-
-  ngOnInit(): void {
-    this.subscribeToRoundStartEmitter();
+  constructor(private _messageService: MessageService) {
+    console.log('instantiated progressbar component');
   }
 
-  private subscribeToRoundStartEmitter() {
-    this.roomCode = this._messageService.getRoomCode();
+  ngOnInit(): void {
+    this.subscribeToRoundEmitters();
+  }
+
+  private subscribeToRoundEmitters() {
+    // this.roomCode = this._messageService.getRoomCode();
     this._messageService.startRound.subscribe(() => {
-      this.startTimer();
-    });
-    this._messageService.endRound.subscribe(() => {
-      console.log('Stopping Timer');
       if (!this.timerStopped) {
-        this.stopTimerAllPlayersAnswered();
+        this.startTimer();
       }
     });
+
+    // this._messageService.getHubConnection().on('RoundEndedShowScore', () => {
+    //   console.log('Stopping Timer');
+    //   if (!this.timerStopped) {
+    //     this.stopTimerAllPlayersAnswered();
+    //     this._messageService.visitScore.emit();
+    //   } else {
+    //     console.log(
+    //       'did not call visitScore.emit because timer already stopped'
+    //     );
+    //   }
+    // });
+    // this._messageService.endRound.subscribe(() => {
+    // });
   }
 
   timeLeftTimer = () => {
     let w = this.pb.nativeElement.style.width;
     w = parseInt(w);
-    this.secondsLeft--;
+    this.secondsLeft--; // used to show countdown #
+    console.log('for some reason the seconds timer gets hit twice ??');
+    console.log(`this.secondsLeft = ${this.secondsLeft}`);
     w -= 4;
     if (w < 30) {
       this.pb.nativeElement.classList.add('bg-warning');
@@ -50,7 +63,6 @@ export class ProgressbarComponent implements OnInit {
 
     if (w <= 1 && !this.timerStopped) {
       this.stopTimer();
-      return;
     }
   };
 
@@ -59,8 +71,7 @@ export class ProgressbarComponent implements OnInit {
   stopTimer() {
     clearInterval(this.timer);
     this.timerStopped = true;
-    // this._messageService.emitStopRound();
-    this._messageService.roundTimeUp();
+    // this._messageService.roundTimeUp();
   }
 
   stopTimerAllPlayersAnswered() {

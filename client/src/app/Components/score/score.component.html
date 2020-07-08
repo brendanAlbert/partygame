@@ -1,33 +1,17 @@
 <div class="container">
   <div class="col-12 mt-5">
     <div *ngIf="scoreResults" class="col-10 mx-auto">
-      <h4 class="text-center">brains with some wrinkle</h4>
+      <div *ngIf="this.scoreResults.lastRound">
+        <h1>final score</h1>
+      </div>
+      <p class="text-center">brains with some wrinkle</p>
 
-      <h5 class="border border-primary p-1 text-center">
+      <p class="border border-primary p-1 text-center">
         {{ scoreResults?.question }}
-      </h5>
-      <h5 class="border border-success p-1 text-center">
+      </p>
+      <!-- <h5 class="border border-success p-1 text-center">
         {{ scoreResults?.answer }}
-      </h5>
-      <table class="table table-sm">
-        <thead>
-          <tr>
-            <th scope="col">Player</th>
-            <th scope="col">Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let player of scoreResults.players">
-            <th *ngIf="player.answer == scoreResults.answer" scope="row">
-              {{ player.name }}
-            </th>
-            <td *ngIf="player.answer == scoreResults.answer" colspan="2">
-              {{ player.score }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <h4 class="text-center mt-5">smooth brains</h4>
+      </h5> -->
       <table class="table table-sm">
         <thead>
           <tr>
@@ -38,6 +22,21 @@
         </thead>
         <tbody>
           <tr *ngFor="let player of scoreResults.players">
+            <th *ngIf="player.answer == scoreResults.answer" scope="row">
+              {{ player.name }}
+            </th>
+            <td *ngIf="player.answer == scoreResults.answer">
+              {{ player.score }}
+            </td>
+            <td
+              *ngIf="player.answer == scoreResults.answer"
+              colspan="2"
+              class="text-success"
+            >
+              {{ player.answer }}
+            </td>
+          </tr>
+          <tr *ngFor="let player of scoreResults.players">
             <th *ngIf="player.answer != scoreResults.answer" scope="row">
               {{ player.name }}
             </th>
@@ -46,7 +45,7 @@
             </td>
             <td
               *ngIf="player.answer != scoreResults.answer"
-              class="border border-danger"
+              class="text-danger"
             >
               {{ player.answer }}
             </td>
@@ -57,6 +56,26 @@
       <div *ngIf="!scoreResults">
         Loading Scores...
       </div>
+
+      <div *ngIf="this.scoreResults.lastRound">
+        <button class="btn btn-primary mr-2" [routerLink]="['/']">
+          main menu
+        </button>
+        <button class="btn btn-success" [routerLink]="['/lobby']">
+          play again
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!this.scoreResults.lastRound" class="progress">
+    <div
+      #progressBar
+      class="progress-bar bg-info progress-bar-striped"
+      role="progressbar"
+      style="width: 100%;"
+    >
+      {{ secondsLeft }}
     </div>
   </div>
 </div>
