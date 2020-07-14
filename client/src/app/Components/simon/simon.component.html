@@ -1,0 +1,49 @@
+<div class="bg-dark simon">
+  <div class="container vh-100 bg-dark">
+    <div
+      class="h-75 col-12 d-flex justify-content-center align-items-center mx-auto bg-dark"
+    >
+      <div
+        class="h-50 col-12 d-flex justify-content-center align-items-center mx-auto bg-dark"
+      >
+        <div class="d-flex flex-column">
+          <div class="d-flex flex-row ml-5 my-5">
+            <div (click)="tapHex1()" id="1" class="px-1">
+              <div #hex1 class="hexagon cyan"><span></span></div>
+            </div>
+            <div (click)="tapHex2()" id="2" class="px-1">
+              <div #hex2 class="hexagon purple"><span></span></div>
+            </div>
+          </div>
+          <div class="d-flex flex-row">
+            <div (click)="tapHex3()" id="3" class="px-1">
+              <div #hex3 class="hexagon pink"><span></span></div>
+            </div>
+            <div (click)="tapHex4()" id="4" class="px-1">
+              <div #hex4 class="hexagon green"><span></span></div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="fail" class="fail-screen">
+          <div class="d-flex flex-column justify-content-center py-5 my-5">
+            <div class="text-center text-yellow">
+              A.I. Firewall Caught You
+            </div>
+            <p class="text-green">
+              number of round passed = {{ this._gameservice.user.score }}
+            </p>
+            <button class="btn btn-block btn-info mb-3" (click)="reset()">
+              try harder
+            </button>
+            <button class="btn btn-block btn-success" routerLink="/simonlobby">
+              back to lobby
+            </button>
+            <button class="btn btn-block btn-primary mb-3" routerLink="/">
+              main menu
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

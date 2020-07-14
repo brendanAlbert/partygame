@@ -1,0 +1,125 @@
+
+.hexagon
+    width: 100px
+    height: 55px
+    position: relative
+
+.hexagon,
+.hexagon:before,
+.hexagon:after
+    // box-shadow: 0 0 10px rgba(0, 0, 0, 0)
+    // z-index: 2
+    opacity: 1
+
+.hexagon:before,
+.hexagon:after
+    content: ""
+    position: absolute
+    left: 22px
+    width: 57px
+    height: 57px
+    transform: rotate(145deg) skew(22.5deg)
+
+.hexagon:before
+    top: -29px
+
+.hexagon:after
+    top: 27px
+
+.hexagon span
+    position: absolute
+    top: 0
+    left: 0
+    width: 100px
+    height: 55px
+    opacity: 1
+    z-index: 2
+    transition: all .5s ease-in-out
+
+.cyan,
+.cyan:before,
+.cyan:after
+    background: cyan
+    box-shadow: 0 0 10px cyan
+
+.cyan span
+    background: cyan
+    opacity: 0
+    transition: all .5s ease-in-out
+
+.pink,
+.pink:before,
+.pink:after
+    background: #FF1493
+    box-shadow: 0 0 10px #FF1493
+
+.pink span
+    background: #FF1493
+    opacity: 0
+    transition: all .5s ease-in-out
+
+.green,
+.green:before,
+.green:after
+    background: #14FF80
+    box-shadow: 0 0 10px #14FF80
+
+.green span
+    background: #14FF80
+    opacity: 0
+    transition: all .5s ease-in-out
+
+.yellow,
+.yellow:before,
+.yellow:after
+    background: #F0FF00
+    box-shadow: 0 0 10px #F0FF00
+
+.yellow span
+    background: #F0FF00
+    opacity: 0
+    transition: all .5s ease-in-out
+
+.purple,
+.purple:before,
+.purple:after
+    background: #BD00FF
+    box-shadow: 0 0 10px #BD00FF
+
+.purple span
+    background: #BD00FF
+    opacity: 0
+    transition: all .5s ease-in-out
+
+.red,
+.red:before,
+.red:after
+    background: #F00
+    box-shadow: 0 0 10px #F00
+
+.red span
+    background: #F00
+    opacity: 0
+    transition: all .5s ease-in-out
+
+.fail-screen
+    position: absolute
+    display: flex
+    justify-content: center
+    align-items: center
+    // width: 90%
+    // height: 90%
+    width: 100%
+    height: 50%
+    overflow: hidden
+    top: 10%
+    background: rgba(0,0,0,0.7)
+    z-index: 10
+
+.text-yellow
+    color: #F0FF00
+    text-shadow: 0px 0px 15px #F0FF00
+
+.text-green
+    color: #14FF80
+    text-shadow: 0px 0px 15px#14FF80

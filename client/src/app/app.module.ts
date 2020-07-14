@@ -9,6 +9,8 @@ import { TriviaComponent } from './Components/trivia/trivia.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ProgressbarComponent } from './Components/progressbar/progressbar.component';
 import { ScoreComponent } from './Components/score/score.component';
+import { SimonlobbyComponent } from './Components/simonlobby/simonlobby.component';
+import { SimonComponent } from './Components/simon/simon.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +20,8 @@ import { ScoreComponent } from './Components/score/score.component';
     TriviaComponent,
     ProgressbarComponent,
     ScoreComponent,
+    SimonlobbyComponent,
+    SimonComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   exports: [ProgressbarComponent, ScoreComponent],

@@ -1,57 +1,47 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from 'src/app/Services/api.service';
-import { TriviumRound } from '../Models/TriviumRound';
-import { Player } from 'src/app/Models/player';
-import { ITriviumRound } from '../Models/ITriviumRound';
-import { IGame } from '../Models/IGame';
-import { Game } from '../Models/Game';
-import { IPlayer } from '../Models/Iplayer';
+import { HttpClient } from '@angular/common/http';
+import { Hacker } from '../Models/Hacker';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GameService {
-  // here we want to track the game state
-  triviumRound: ITriviumRound;
-  game: IGame;
+  users: any[];
 
-  roundNumber: number;
-  roomCode: string;
-  player: IPlayer;
+  user: any;
 
-  constructor(private _apiService: ApiService) {
-    this.game = new Game();
-    // this.player = new Player();
-    this.roundNumber = 0;
+  private hackers_api_endpoint = 'http://192.168.0.12:5000/hackers';
+
+  constructor(private httpClient: HttpClient) {
+    this.users = [];
+    this.user = {};
   }
 
-  fetchRoundFromRoom(roundNumber: number, roomCode: string) {
-    this._apiService
-      .fetchTrivia(roomCode, roundNumber)
-      .subscribe((data: any) => {
-        this.triviumRound = data;
-        this.triviumRound.roundNumber = roundNumber;
-        this.game.roundNumber = roundNumber;
-        this.game.triviumRounds.push(this.triviumRound);
-      });
+  addUser(user: any) {
+    this.user = user;
   }
 
-  startRound(roomCode: string) {
-    // fetch first round
-    // return round to trivia component
-    this.fetchRoundFromRoom(this.roundNumber, roomCode);
-    // this.setRoundNumber(this.roundNumber + 1);
+  addUserToList(user: any) {
+    this.users.push(user);
   }
 
-  getRound(): ITriviumRound {
-    return this.game.triviumRounds[this.game.roundNumber];
+  getUsers() {
+    return this.users;
   }
 
-  setRoundNumber(roundNumber: number) {
-    this.roundNumber = roundNumber;
+  fetchHackers(): Observable<Hacker[]> {
+    return this.httpClient.get<Hacker[]>(this.hackers_api_endpoint);
   }
 
-  setRoomCode(roomCode: string) {
-    this.roomCode = roomCode;
+  addHacker(hacker: Hacker) {
+    this.httpClient.post(this.hackers_api_endpoint + '/add', hacker).subscribe(
+      (data) => {
+        // console.log('Post request successful', data);
+      },
+      (error) => {
+        // console.log('Error posting hacker', error);
+      }
+    );
   }
 }

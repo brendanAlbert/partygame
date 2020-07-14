@@ -20,11 +20,7 @@ export class LobbyComponent implements OnInit {
   players: IPlayer[] = [];
   navigationExtras: NavigationExtras = {};
 
-  constructor(
-    // private _gameService: GameService,
-    private _messageService: MessageService,
-    private router: Router
-  ) {
+  constructor(private _messageService: MessageService, private router: Router) {
     this.player = new Player();
   }
 

@@ -1,5 +1,6 @@
 using api.Data;
 using api.Messages;
+using api.Services.Hacker;
 using api.Services.Trivia;
 using api.Services.User;
 using AutoMapper;
@@ -48,6 +49,7 @@ namespace partygame
            });
             // services.AddScoped<IUserService, UserService>();
             services.AddScoped<IGameService, GameService>();
+            services.AddScoped<IHackerService, HackerService>();
             services.AddSingleton<IGameRoomService, GameRoomService>();
         }
 
