@@ -1,0 +1,13 @@
+version: "3.3"
+services:
+    angular-docker:
+        container_name: wrinkle-client-container
+        build: ./client
+        ports:
+            - "4200:80"
+
+    dotnet-docker:
+        container_name: wrinkle-api-container
+        build: ./api
+        ports:
+            - "5000:5000"

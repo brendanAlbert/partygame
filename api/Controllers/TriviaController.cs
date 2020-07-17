@@ -19,19 +19,19 @@ namespace api.Controllers
             _triviaService = triviaService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            return Ok(await _triviaService.GetTriviaObjects());
-        }
+        // [HttpGet]
+        // public async Task<IActionResult> Get()
+        // {
+        //     return Ok(await _triviaService.GetTriviaObjects());
+        // }
 
-        [HttpGet, Route("{roomname}")]
-        public async Task<IActionResult> GetTriviumRounds(string roomname)
-        {
-            // return Ok(await _gameRoomService.)
+        // [HttpGet, Route("{roomname}")]
+        // public async Task<IActionResult> GetTriviumRounds(string roomname)
+        // {
+        //     // return Ok(await _gameRoomService.)
 
-            return Ok(await _triviaService.GetTriviumRounds(4, roomname));
-        }
+        //     return Ok(await _triviaService.GetTriviumRounds(4, roomname));
+        // }
 
         [HttpGet, Route("{roomname}/{roundNumber}")]
         public IActionResult GetTriviumRoundNumber(string roomname, int roundNumber)

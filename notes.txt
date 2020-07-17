@@ -9,3 +9,23 @@
     TriviaController
     SimonController
 
+
+
+docker ps -a
+docker container ls
+docker container prune
+
+docker cp hackers.db <docker_image_id>:/app
+
+docker build -t partygame .
+docker run -d -p 5000:5000 --name myapp partygame
+
+
+docker build -t wrinkle-client .
+docker run -it --rm -p 9000:80 wrinkle-client
+npm run-script build
+
+docker system prune
+docker-compose up -d
+docker-compose down
+docker-compose build

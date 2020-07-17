@@ -18,6 +18,11 @@ namespace api.Services.Hacker
                 connection.Open();
 
                 var command = connection.CreateCommand();
+
+                command.CommandText = "CREATE TABLE IF NOT EXISTS tophackers(name VARCHAR(50) NOT NULL, score INT NOT NULL)";
+                command.ExecuteNonQuery();
+
+
                 command.CommandText = $"INSERT INTO tophackers(name,score) VALUES(@name, @score)";
                 command.Parameters.AddWithValue("@name", hacker.Name);
                 command.Parameters.AddWithValue("@score", hacker.Score);
@@ -32,11 +37,17 @@ namespace api.Services.Hacker
         {
             List<api.Models.Hacker> hackers = new List<api.Models.Hacker>();
 
+            Console.WriteLine("Test to make sure docker is using the new file");
+
             using (var connection = new SqliteConnection("Data Source=hackers.db"))
             {
                 connection.Open();
 
                 var command = connection.CreateCommand();
+
+                command.CommandText = "CREATE TABLE IF NOT EXISTS tophackers(name VARCHAR(50) NOT NULL, score INT NOT NULL)";
+                command.ExecuteNonQuery();
+
                 command.CommandText = @"SELECT name, score FROM tophackers ORDER BY score DESC LIMIT 8";
 
                 using (var reader = command.ExecuteReader())

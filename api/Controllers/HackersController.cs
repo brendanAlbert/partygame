@@ -19,7 +19,7 @@ namespace api.Controllers
         [HttpGet]
         public IActionResult GetHackers()
         {
-            Console.WriteLine("fetching hackers");
+            Console.WriteLine("fetching hackers - new docker version");
             return Ok(_hackerService.GetHackers());
         }
 
