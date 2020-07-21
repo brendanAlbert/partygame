@@ -12,7 +12,8 @@ export class GameService {
   user: any;
 
   //   private hackers_api_endpoint = 'http://192.168.0.12:5000/hackers';
-  private hackers_api_endpoint = 'http://localhost:5000/hackers';
+  private hackers_api_endpoint = 'http://0.0.0.0:5000/hackers';
+  //   private hackers_api_endpoint = 'http://localhost:5000/hackers';
 
   constructor(private httpClient: HttpClient) {
     this.users = [];

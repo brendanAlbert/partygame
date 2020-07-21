@@ -21,7 +21,8 @@ export class MessageService {
 
   constructor() {}
 
-  public msgHubUrl = 'http://localhost:5000/msghub';
+  public msgHubUrl = 'http://0.0.0.0:5000/msghub';
+  //   public msgHubUrl = 'http://localhost:5000/msghub';
   //   public msgHubUrl = 'http://192.168.0.12:5000/msghub';
 
   public startConnection = () => {
