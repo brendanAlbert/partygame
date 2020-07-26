@@ -36,7 +36,7 @@ namespace partygame
                 //     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200");
                 // });
                 options.AddPolicy("CorsPolicy", builder => builder
-                    .WithOrigins("http://localhost:4200", "http://192.168.0.12:4200", "http://0.0.0.0:4200")
+                    .WithOrigins("http://localhost:4200", "http://192.168.0.12:4200", "http://192.168.0.16:4200", "http://0.0.0.0:4200")
                     // .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod()

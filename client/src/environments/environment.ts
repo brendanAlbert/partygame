@@ -3,7 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  trivia_api_endpoint: 'http://192.168.0.12.:5000/trivia',
+  msgHubUrl: 'http://192.168.0.12:5000/msghub',
+  hackers_api_endpoint: 'http://192.168.0.12:5000/hackers'
 };
 
 /*

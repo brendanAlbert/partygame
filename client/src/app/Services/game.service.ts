@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Hacker } from '../Models/Hacker';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -11,9 +12,7 @@ export class GameService {
 
   user: any;
 
-  //   private hackers_api_endpoint = 'http://192.168.0.12:5000/hackers';
-  private hackers_api_endpoint = 'http://0.0.0.0:5000/hackers';
-  //   private hackers_api_endpoint = 'http://localhost:5000/hackers';
+  private hackers_api_endpoint = environment.hackers_api_endpoint;
 
   constructor(private httpClient: HttpClient) {
     this.users = [];
