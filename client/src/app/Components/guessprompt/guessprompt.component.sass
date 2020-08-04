@@ -1,0 +1,148 @@
+*
+    transition: all 0.4s ease-in-out
+
+p, h1,h2,h3,h4,h5,h6, a, button, div
+    font-family: 'Waiting for the Sunrise', cursive
+
+.guess-container
+    display: flex
+    flex-direction: column
+    width: 100%
+    padding-top: 10px
+    justify-content: space-around
+    align-items: center
+    background-color: black
+
+    & h2
+        font-size: 32px
+        background: -webkit-linear-gradient(#743ad5, #d53a9d)
+        -webkit-background-clip: text
+        -webkit-text-fill-color: transparent
+
+    & button
+        width: 90%
+        padding: 6px 20px
+        background-color: white
+        font-size: 20px
+        border: none
+        margin: 10px auto
+
+    & textarea
+        width: 90%
+        // border: 4px solid #10ac84
+        font-size: 28px
+        padding: 2px
+        text-align: center
+        // text-transform: uppercase
+
+.border-gradient-purple
+    border: 14px solid
+    border-image-slice: 1
+    border-width: 8px
+    border-image-source: linear-gradient(to left, #743ad5, #d53a9d)
+
+.username-input-wrapper
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    width: 100%
+
+.added-guesses-container
+    display: flex
+    justify-content: center
+    flex-direction: column
+    align-items: center
+    margin: 10px
+
+.skewed-wrapper
+    display: flex
+    justify-content: center
+    align-items: center
+    margin: 10px
+
+.skewed
+    height: 100px
+    font-size: 30px
+    writing-mode: vertical-lr
+    text-orientation: upright
+    width: 20px
+    padding: 10px
+    display: flex
+    justify-content: center
+    align-items: center
+    margin: 2px
+    transform: rotate(1deg) skew(-15deg)
+    border-width: 2px
+    border-style: solid
+
+#see-guesses
+    font-size: 16px
+
+.button-wrapper
+    width: 100%
+
+.see-all-guesses-wrapper
+    width: 95%
+    margin: 0 auto
+
+.guess-submission
+    cursor: pointer
+    width: 90%
+    margin: 40px
+    padding: 8px
+    font-size: 24px
+    background: white
+    color: black
+    display: flex
+    justify-content: space-around
+    align-items: center
+
+    & span
+        min-width: 20%
+        text-align: center
+        padding: 6px
+
+    & span:first-child
+        font-size: 50px
+
+.all-guesses-container
+    width: 95%
+
+    & h2
+        text-align: center
+        font-size: 32px
+        background: -webkit-linear-gradient(#743ad5, #d53a9d)
+        -webkit-background-clip: text
+        -webkit-text-fill-color: transparent
+
+.confirm-modal
+    height: 100%
+    width: 100%
+    background: rgba(45, 45, 45, 0.5)
+    color: white
+    margin: 0 auto
+    position: fixed
+    top: 0
+    left: 0
+    z-index: 100
+    display: flex
+    flex-direction: column
+    justify-content: center
+    text-align: center
+    align-items: center
+    font-size: 50px
+
+    & h4
+        font-size: 40px
+
+    & button
+        width: 90%
+        border: none
+        margin: 10px auto
+
+.green
+    color: #28a745
+
+.red
+    color: #dc3545

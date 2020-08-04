@@ -1,0 +1,35 @@
+<link
+  href="https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap"
+  rel="stylesheet"
+/>
+
+<div *ngIf="!sending">
+  <canvas #canvas id="canvas"></canvas>
+
+  <div class="draw-wrapper">
+    <div>
+      <p>use the above section to draw your avatar.</p>
+      <p>(2 colors available)</p>
+    </div>
+    <div class="colors-wrapper">
+      <div class="color-btn" #color1 id="color1" [ngStyle]="getColor1()"></div>
+      <div class="color-btn" #color2 id="color2" [ngStyle]="getColor2()"></div>
+      <button #clearCanvasBtn id="clearCanvasBtn">
+        clear canvas
+      </button>
+    </div>
+  </div>
+  <footer class="join-game-footer">
+    <!-- <h2>enter username:</h2> -->
+    <div class="input-wrapper">
+      <!-- <input #username type="text" name="username" maxlength="14" /> -->
+      <button #avatarBtn id="avatar-btn" (click)="returnToLobby()">
+        to lobby
+      </button>
+    </div>
+  </footer>
+</div>
+
+<div *ngIf="sending" class="sending-screen">
+  submitting your image and returning to lobby ...
+</div>

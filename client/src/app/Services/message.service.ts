@@ -1,7 +1,8 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import * as signalR from '@aspnet/signalr';
+// import * as signalR from '@aspnet/signalr';
+import * as signalR from '@microsoft/signalr';
 import { IPlayer } from '../Models/Iplayer';
-import { environment } from '../../environments/environment'
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -60,11 +61,11 @@ export class MessageService {
     this.hubConnection.stop();
   }
 
-  public ListenForAddToGroup() {
-    this.hubConnection.on('Send', (data) => {
-      console.log(data);
-    });
-  }
+  //   public ListenForAddToGroup() {
+  //     this.hubConnection.on('Send', (data) => {
+  //       console.log(data);
+  //     });
+  //   }
 
   public ListenForStartGame() {
     this.hubConnection.on('StartGame', () => {

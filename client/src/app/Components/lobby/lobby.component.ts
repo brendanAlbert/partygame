@@ -26,7 +26,7 @@ export class LobbyComponent implements OnInit {
 
   ngOnInit(): void {
     this._messageService.startConnection();
-    this._messageService.ListenForAddToGroup();
+    // this._messageService.ListenForAddToGroup(); //
     this._messageService.ListenForStartGame();
     this.subscribeToEvents();
   }

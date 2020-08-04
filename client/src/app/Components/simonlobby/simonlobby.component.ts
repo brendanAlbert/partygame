@@ -16,7 +16,7 @@ import { Hacker } from 'src/app/Models/Hacker';
   styleUrls: ['./simonlobby.component.sass'],
 })
 export class SimonlobbyComponent implements OnInit, AfterViewInit {
-  @ViewChild('view') screenElement: ElementRef;
+  //   @ViewChild('view') screenElement: ElementRef;
 
   users: any;
 

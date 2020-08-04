@@ -1,0 +1,109 @@
+<link
+  href="https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap"
+  rel="stylesheet"
+/>
+<div class="container">
+  <div class="draw-lobby-container">
+    <h1>Drawing Game Lobby</h1>
+
+    <div *ngIf="inRoom" class="room-code-container">
+      <p>room code:</p>
+      <h1 style="text-transform: uppercase;">{{ roomCode }}</h1>
+    </div>
+
+    <div *ngIf="!inRoom" class="active-game-lobbies">
+      <p>active game lobbies:</p>
+      <p *ngIf="activeDrawGameLobbies.length == 0">
+        no game lobbies at the moment!
+      </p>
+      <div class="active-game-lobbies-grid">
+        <div *ngFor="let lobby of activeDrawGameLobbies">
+          {{ lobby }}
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="inRoom" class="players-container">
+      <div class="player-grid">
+        <div *ngFor="let player of roomDrawPlayers">
+          <div class="player-grid-box">
+            <div *ngIf="player.imageUrl != undefined">
+              <img
+                src="{{ playerImgUrl + player.imageUrl }}"
+                width="80"
+                height="80"
+              />
+            </div>
+            <div *ngIf="player.imageUrl == undefined">
+              <img
+                src="{{ playerImgUrl + 'Dildo baggins_test.png' }}"
+                width="80"
+                height="80"
+              />
+            </div>
+
+            <div *ngIf="player.color1" [style.color]="player.color1">
+              {{ player.name }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section *ngIf="!inRoom" class="join-game-section border-gradient-purple">
+      <h2>enter room code:</h2>
+      <div class="input-wrapper">
+        <input #roomcode type="text" name="roomcode" maxlength="4" />
+        <button (click)="enterRoom(roomcode.value)">enter!</button>
+      </div>
+    </section>
+    <section
+      *ngIf="inRoom && !hasUsername"
+      class="join-game-section border-gradient-purple"
+    >
+      <h2>enter username:</h2>
+      <div class="username-input-wrapper">
+        <input
+          id="username-input"
+          #username
+          type="text"
+          name="username"
+          maxlength="20"
+        />
+        <button (click)="addusername(username.value)">add me!</button>
+      </div>
+    </section>
+
+    <!-- <section
+      *ngIf="isAdmin && hasUsername && playerImgReceived == true"
+      class="join-game-section border-gradient-purple"
+    >
+      
+    </section> -->
+
+    <section
+      *ngIf="hasUsername && playerImgReceived == true"
+      class="join-game-section border-gradient-purple"
+    >
+      <div *ngIf="isAdmin" class="username-input-wrapper">
+        <button (click)="startGame()">start game</button>
+      </div>
+      <div *ngIf="!isAdmin" class="username-input-wrapper">
+        <h2>waiting for other players + admin to start game</h2>
+      </div>
+    </section>
+
+    <section
+      *ngIf="hasUsername && playerImgReceived == false"
+      class="join-game-section border-gradient-purple"
+    >
+      <div class="username-input-wrapper">
+        <h2>loading avatar draw screen ..</h2>
+      </div>
+    </section>
+
+    <div *ngIf="countdown" class="countdown">
+      <div>game starts in -</div>
+      <div #timeleft id="time-to-start">6</div>
+    </div>
+  </div>
+</div>

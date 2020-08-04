@@ -1,0 +1,38 @@
+<link
+  href="https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap"
+  rel="stylesheet"
+/>
+
+<div *ngIf="!sending">
+  <canvas #canvas id="canvas"></canvas>
+
+  <div class="draw-wrapper">
+    <div>
+      <div class="prompt-container">
+        <h5>draw this prompt:</h5>
+        <div>
+          <h1 #prompt></h1>
+          <span>time left = </span><span #counter></span>
+        </div>
+      </div>
+    </div>
+    <div class="colors-wrapper">
+      <div class="color-btn" #color1 id="color1" [ngStyle]="getColor1()"></div>
+      <div class="color-btn" #color2 id="color2" [ngStyle]="getColor2()"></div>
+      <button #clearCanvasBtn id="clearCanvasBtn">
+        clear canvas
+      </button>
+    </div>
+  </div>
+  <footer class="join-game-footer">
+    <div class="input-wrapper border-gradient-purple">
+      <button #avatarBtn id="avatar-btn" (click)="stopInterval()">
+        done
+      </button>
+    </div>
+  </footer>
+</div>
+
+<div *ngIf="sending" class="sending-screen">
+  submitting your image showing first drawing ...
+</div>

@@ -1,11 +1,14 @@
 using api.Data;
 using api.Messages;
+using api.Services.Draw;
 using api.Services.Hacker;
 using api.Services.Trivia;
 using api.Services.User;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,11 +49,21 @@ namespace partygame
             services.AddSignalR(options =>
            {
                options.EnableDetailedErrors = true;
+
            });
             // services.AddScoped<IUserService, UserService>();
             services.AddScoped<IGameService, GameService>();
             services.AddScoped<IHackerService, HackerService>();
+            services.AddScoped<IDrawService, DrawService>();
             services.AddSingleton<IGameRoomService, GameRoomService>();
+            services.AddSingleton<IDrawGameRoomService, DrawGameRoomService>();
+
+            services.Configure<FormOptions>(o =>
+            {
+                o.ValueLengthLimit = int.MaxValue;
+                o.MultipartBodyLengthLimit = int.MaxValue;
+                o.MemoryBufferThreshold = int.MaxValue;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -73,6 +86,7 @@ namespace partygame
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<DrawMessageHub>("/drawhub");
                 endpoints.MapHub<MessageHub>("/msghub");
             });
         }

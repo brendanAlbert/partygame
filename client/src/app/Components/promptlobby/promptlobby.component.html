@@ -1,0 +1,74 @@
+<link
+  href="https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap"
+  rel="stylesheet"
+/>
+<div class="container">
+  <div class="draw-lobby-container">
+    <h1>Prompt Lobby</h1>
+
+    <div *ngIf="inRoom" class="room-code-container">
+      <p>room code:</p>
+      <h1 style="text-transform: uppercase;">{{ roomCode }}</h1>
+    </div>
+
+    <div *ngIf="inRoom" class="players-container">
+      <div class="player-grid">
+        <div *ngFor="let player of promptLobbyPlayers">
+          <div class="player-grid-box">
+            <div *ngIf="player.imageUrl != undefined">
+              <img
+                src="{{ playerImgUrl + player.imageUrl }}"
+                width="80"
+                height="80"
+              />
+            </div>
+
+            <div *ngIf="player.color1" [style.color]="player.color1">
+              {{ player.name }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section *ngIf="!inRoom" class="join-game-section border-gradient-purple">
+      <h2>enter room code:</h2>
+      <div class="input-wrapper">
+        <input #roomcode type="text" name="roomcode" maxlength="4" />
+        <button (click)="enterRoom(roomcode.value)">enter!</button>
+      </div>
+    </section>
+    <section
+      *ngIf="inRoom && !hasUsername"
+      class="join-game-section border-gradient-purple"
+    >
+      <h2>enter username:</h2>
+      <div class="username-input-wrapper">
+        <input
+          id="username-input"
+          #username
+          type="text"
+          name="username"
+          maxlength="20"
+        />
+        <button (click)="addusername(username.value)">add me!</button>
+      </div>
+    </section>
+
+    <section class="join-game-section border-gradient-purple">
+      <div *ngIf="isAdmin" class="username-input-wrapper">
+        <button (click)="startPrompt()">start prompt</button>
+      </div>
+      <div *ngIf="!isAdmin" class="username-input-wrapper">
+        <h2>
+          waiting for other players to finish drawing and for the admin to start
+          game
+        </h2>
+      </div>
+    </section>
+
+    <div *ngIf="countdown" class="countdown">
+      <div>let's see some amazing artwork in -</div>
+      <div #timeleft id="time-to-start">6</div>
+    </div>
+  </div>
+</div>

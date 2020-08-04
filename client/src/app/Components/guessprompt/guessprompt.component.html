@@ -1,0 +1,77 @@
+<link
+  href="https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap"
+  rel="stylesheet"
+/>
+<div class="container">
+  <div class="draw-lobby-container">
+    <h1>what prompted this masterpiece?</h1>
+
+    <div>
+      <img #art src="" alt="" />
+    </div>
+
+    <section
+      *ngIf="!seeAllGuesses"
+      class="guess-container border-gradient-purple"
+    >
+      <div *ngIf="guessAdded">
+        <h2>guesses submitted</h2>
+        <div class="added-guesses-container">
+          <div class="skewed-wrapper">
+            <div
+              *ngFor="let player of playersWhoHaveGuessed; let i = index"
+              class="skewed"
+              [ngStyle]="getColor1(player)"
+            >
+              {{ i + 1 }}
+            </div>
+          </div>
+          <div *ngIf="isAdmin && !timeToSeeResults" class="button-wrapper">
+            <button id="see-guesses" (click)="seeGuesses()">
+              see all guesses
+            </button>
+          </div>
+          <div *ngIf="isAdmin && timeToSeeResults" class="button-wrapper">
+            <button id="see-guesses" (click)="resultsScreen()">
+              see results!
+            </button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!guessAdded">
+        <h2>enter guess:</h2>
+        <div class="username-input-wrapper">
+          <textarea #userguess type="text" name="userguess"></textarea>
+          <button (click)="adduserguess(userguess.value)">add guess</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div *ngIf="seeAllGuesses" class="all-guesses-container">
+        <h2>what was the prompt?</h2>
+        <div class="see-all-guesses-wrapper">
+          <div
+            *ngFor="let guess of allGuesses; let i = index"
+            class="guess-submission"
+            (click)="selectAnswer(i)"
+            [ngStyle]="guessBorders[i]"
+          >
+            <span>
+              {{ i + 1 }}
+            </span>
+            <span>
+              {{ guess }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="showModal" class="confirm-modal">
+        <h4>pick this one?</h4>
+        <p>"{{ selectedAnswerText }}"</p>
+        <button class="green" (click)="confirmAnswer()">yee boii</button>
+        <button class="red" (click)="chooseDifferent()">maybe not</button>
+      </div>
+    </section>
+  </div>
+</div>

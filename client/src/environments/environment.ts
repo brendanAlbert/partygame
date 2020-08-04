@@ -2,11 +2,20 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+const host = 'http://192.168.0.12';
+const port = '5000';
+
 export const environment = {
   production: false,
-  trivia_api_endpoint: 'http://192.168.0.12.:5000/trivia',
-  msgHubUrl: 'http://192.168.0.12:5000/msghub',
-  hackers_api_endpoint: 'http://192.168.0.12:5000/hackers'
+  trivia_api_endpoint: `${host}:${port}/trivia`,
+  msgHubUrl: `${host}:${port}/msghub`,
+  hackers_api_endpoint: `${host}:${port}/hackers`,
+  drawHubUrl: `${host}:${port}/drawhub`,
+  image_upload_endpoint: `${host}:${port}/draw/images/upload`,
+  player_image_url: `${host}:${port}/draw/images/`,
+  prompt_image_upload_url: `${host}:${port}/draw/images/prompts/upload`,
+  get_prompt_image_url: `${host}:${port}/draw/images/prompts/`,
+  //   players_draw_endpoint: `${host}:${port}/draw/players`,
 };
 
 /*
