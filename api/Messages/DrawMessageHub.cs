@@ -15,6 +15,25 @@ namespace api.Messages
             _drawService = drawService;
         }
 
+        public async Task FetchMyPlaceholderImgUrl(string roomCode)
+        {
+            roomCode = roomCode.ToUpper();
+
+            List<DrawPlayer> players = _drawService.GetUsersInRoom(roomCode);
+            string urlString = "";
+            foreach (DrawPlayer player in players)
+            {
+                if (player.ConnectionString == Context.ConnectionId)
+                {
+                    urlString = player.ImageUrl;
+                    break;
+                }
+            }
+
+            Console.WriteLine($"player with connection id {Context.ConnectionId} has imgUrl {urlString}");
+            await Clients.Caller.SendAsync("FetchedYourImgUrl", urlString);
+        }
+
         public async Task AddToDrawGroup(string roomCode)
         {
             roomCode = roomCode.ToUpper();
@@ -40,12 +59,24 @@ namespace api.Messages
             await Clients.All.SendAsync("ActiveLobbies", _drawService.GetAllDrawGameRooms());
         }
 
-        public void AssociateUserWithId(string userName, string roomCode, string imgUrl)
+        public void AssociateUserWithId(string userName, string roomCode, string id)
         {
             roomCode = roomCode.ToUpper();
 
-            Console.WriteLine($"img url passed into draw message hub: {imgUrl}");
-            _drawService.AssociateUserWithId(userName, roomCode, Context.ConnectionId, imgUrl);
+            _drawService.AssociateUserWithId(userName, roomCode, Context.ConnectionId, id);
+        }
+        public void AssociateUserWithUrl(string userName, string roomCode, string imgUrl)
+        {
+            roomCode = roomCode.ToUpper();
+
+            _drawService.AssociateUserWithUrl(userName, roomCode, Context.ConnectionId, imgUrl);
+        }
+
+        public void KeepAvatar(string userName, string roomCode, string url)
+        {
+            roomCode = roomCode.ToUpper();
+
+            _drawService.KeepAvatar(userName, roomCode, Context.ConnectionId, url);
         }
 
         public async Task StartGame(string room)
@@ -80,6 +111,8 @@ namespace api.Messages
         public async Task NewLobbyArrival(string room, DrawPlayer drawPlayer)
         {
             room = room.ToUpper();
+
+            drawPlayer.StillDrawing = false;
 
             _drawService.GetDrawGame(room).FirstRoundLobby.Add(drawPlayer);
 
@@ -137,6 +170,81 @@ namespace api.Messages
             room = room.ToUpper();
 
             await Clients.Group(room).SendAsync("HeadToResultsScreen");
+        }
+
+        public async Task CalculateAndFetchRoundResults(string room)
+        {
+            room = room.ToUpper();
+
+            DrawGameRound dgr = _drawService.GetDrawGame(room).FetchGameRoundResults();
+
+            PlayerAnswerHashMap hashMap = new PlayerAnswerHashMap();
+
+            foreach (Tuple<DrawPlayer, string> tpl in dgr.ListPlayerAnswerTuples)
+            {
+                if (hashMap.Associations.ContainsKey(tpl.Item2))
+                {
+                    hashMap.Associations[tpl.Item2].Add(tpl.Item1);
+                }
+                else
+                {
+                    hashMap.Associations.Add(tpl.Item2, new List<DrawPlayer> { tpl.Item1 });
+                }
+            }
+
+            if (!hashMap.Associations.ContainsKey(dgr.Answer))
+            {
+                hashMap.Associations.Add(dgr.Answer, new List<DrawPlayer> { });
+            }
+
+            var roundResultsDTO = new
+            {
+                url = dgr.ImageUrl,
+                players = dgr.Players,
+                playerAnswerHashMap = hashMap, // this tracks who voted for which answer
+                guessAndItsSubmitter = dgr.ListPlayerAnswerSubmissions, // this associates guesses with their submitters to assign points
+                answer = dgr.Answer,
+                lastRound = dgr.LastRound
+            };
+
+            await Clients.Group(room).SendAsync("ReturningCalculatedAndFetchedRoundResults", roundResultsDTO);
+        }
+
+        public async Task GetNextRound(string room, List<DrawPlayer> drawPlayers)
+        {
+            room = room.ToUpper();
+
+            _drawService.GetDrawGame(room).UpdatePlayersScores(drawPlayers);
+
+            DrawGameRound dgr = _drawService.GetDrawGame(room).FetchRandomGameRound();
+
+            var gameRoundDTO = new
+            {
+                url = dgr.ImageUrl
+            };
+
+            await Clients.Group(room).SendAsync("GotNextRound", gameRoundDTO);
+        }
+
+        public async Task ShowNextPromptResult(string room)
+        {
+            /* THIS METHOD IS FOR KEEPING ALL PLAYERS IN SYNC WHEN SHOWING WHO CHOSE WHICH ANSWER AND WHO GETS POINTS */
+            room = room.ToUpper();
+
+
+
+            await Clients.Group(room).SendAsync("ShowingNextPromptResult");
+        }
+
+        public async Task ShowFinalScore(string room)
+        {
+            room = room.ToUpper();
+
+
+            // let's delete this game room
+            _drawService.DeleteDrawGame(room);
+
+            await Clients.Group(room).SendAsync("ShowingFinalScore");
         }
     }
 }

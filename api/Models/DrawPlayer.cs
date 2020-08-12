@@ -2,7 +2,7 @@ namespace api.Models
 {
     public class DrawPlayer
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string ConnectionString { get; set; }
         public bool IsAdmin { get; set; }
         public int Score { get; set; }
@@ -10,5 +10,7 @@ namespace api.Models
         public string ImageUrl { get; set; }
         public string Color1 { get; set; }
         public string Color2 { get; set; }
+        public string GaryTrail { get; set; } = "";
+        public bool StillDrawing { get; set; } = true;
     }
 }

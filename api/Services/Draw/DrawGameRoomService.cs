@@ -19,10 +19,18 @@ namespace api.Services.Draw
             Console.WriteLine($"Inside AddNewDrawGameRoom , new drawgame room added with name {drawGame.RoomName}");
         }
 
+        public void DeleteDrawGameRoom(string room)
+        {
+            int indexToRemove = this.drawGameRooms.FindIndex(rm => rm.RoomName == room);
+            this.drawGameRooms.RemoveAt(indexToRemove);
+        }
+
         public List<DrawGame> GetDrawGameRooms()
         {
             return drawGameRooms;
         }
+
+
 
 
     }

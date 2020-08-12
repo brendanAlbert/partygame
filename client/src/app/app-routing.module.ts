@@ -6,7 +6,7 @@ import { DrawlobbyComponent } from './Components/drawlobby/drawlobby.component';
 import { LobbyComponent } from './Components/lobby/lobby.component';
 import { PromptComponent } from './Components/prompt/prompt.component';
 import { GuesspromptComponent } from './Components/guessprompt/guessprompt.component';
-import { PromptlobbyComponent } from './Components/promptlobby/promptlobby.component';
+// import { PromptlobbyComponent } from './Components/promptlobby/promptlobby.component';
 import { PromptresultsComponent } from './Components/promptresults/promptresults.component';
 import { SimonComponent } from './Components/simon/simon.component';
 import { SimonlobbyComponent } from './Components/simonlobby/simonlobby.component';
@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: '', component: MenuComponent },
   { path: 'drawlobby', component: DrawlobbyComponent },
   { path: 'draw', component: DrawComponent },
-  { path: 'promptlobby', component: PromptlobbyComponent },
+  //   { path: 'promptlobby', component: PromptlobbyComponent },
   { path: 'promptresults', component: PromptresultsComponent },
   { path: 'guessprompt', component: GuesspromptComponent },
   { path: 'prompt', component: PromptComponent },

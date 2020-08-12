@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
+
+
     [ApiController, Route("[controller]")]
     public class DrawController : ControllerBase
     {
@@ -52,13 +54,34 @@ namespace api.Controllers
         [HttpGet("images/{imageUrl}")]
         public IActionResult Get(string imageUrl)
         {
+            if (imageUrl == null)
+            {
+                return BadRequest(new { imageUrl });
+            }
             try
             {
-                var folderName = Path.Combine("Resources", "Images");
-                var pathToGet = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-                var fullPath = Path.Combine(pathToGet, imageUrl);
-                Byte[] b = System.IO.File.ReadAllBytes(fullPath);
-                return File(b, "image/png");
+                if (imageUrl != null)
+                {
+                    Console.WriteLine($"url of image we fetching = {imageUrl}");
+
+                    string folderName;
+                    if (imageUrl.Contains("_placeholder"))
+                    {
+                        folderName = Path.Combine("Resources", "Placeholders");
+                    }
+                    else
+                    {
+                        folderName = Path.Combine("Resources", "Images");
+                    }
+                    var pathToGet = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                    var fullPath = Path.Combine(pathToGet, imageUrl);
+                    Byte[] b = System.IO.File.ReadAllBytes(fullPath);
+                    return File(b, "image/png");
+                }
+                else
+                {
+                    return BadRequest(new { imageUrl });
+                }
             }
             catch (Exception ex)
             {
@@ -67,14 +90,26 @@ namespace api.Controllers
             }
         }
 
-        [HttpPost("players")]
-        public IActionResult AddPlayer(DrawPlayer drawPlayer)
+
+
+        [HttpPost("images/copy")]
+        public IActionResult Post(api.Dtos.ImageTransferDto body)
         {
-            Console.WriteLine("adding drawPlayer");
-            // Console.WriteLine(hacker.Name);
-            // Console.WriteLine(hacker.Score);
-            // _hackerService.AddHacker(hacker);
-            return Accepted();
+            try
+            {
+                var folderName = Path.Combine("Resources", "Placeholders");
+                var pathToGet = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                var fullPath = Path.Combine(pathToGet, body.originalUrl);
+
+                string newImageUrl = body.newImageUrl;
+                System.IO.File.Copy(fullPath, $"Resources/Images/{ newImageUrl }");
+                return Ok(new { newImageUrl });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Image not available" + ex);
+                return BadRequest("image was not fetched");
+            }
         }
 
         [HttpPost("images/prompts/upload"), DisableRequestSizeLimit]

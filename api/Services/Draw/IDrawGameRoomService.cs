@@ -7,5 +7,7 @@ namespace api.Services.Draw
     {
         public List<DrawGame> GetDrawGameRooms();
         public void AddNewDrawGameRoom(DrawGame drawGame);
+
+        public void DeleteDrawGameRoom(string room);
     }
 }

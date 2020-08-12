@@ -25,11 +25,13 @@ export class DrawComponent implements OnInit, AfterViewInit {
   roomCode: string = '';
   username: string = '';
   uploadImgUrl: string = environment.image_upload_endpoint;
+  playerImgEndpoint = environment.player_image_url;
   playerImgUrl: string = '';
   sending: boolean = false;
   color1: string = '';
   color2: string = '';
   activeColor: string;
+  id: string;
 
   constructor(private router: Router, private _drawService: DrawService) {
     let navigation = this.router.getCurrentNavigation();
@@ -37,13 +39,17 @@ export class DrawComponent implements OnInit, AfterViewInit {
       roomCode: string;
       username: string;
       color1: string;
+      id: string;
       color2: string;
+      imgUrl: string;
     };
     this.roomCode = state.roomCode;
     this.username = state.username;
     this.color1 = state.color1;
     this.color2 = state.color2;
     this.activeColor = state.color1;
+    this.playerImgUrl = state.imgUrl;
+    this.id = state.id;
   }
 
   ngOnInit(): void {}
@@ -174,6 +180,25 @@ export class DrawComponent implements OnInit, AfterViewInit {
     canvas.addEventListener('touchstart', touchStart, { passive: false });
     canvas.addEventListener('touchend', touchEnd, { passive: false });
     canvas.addEventListener('touchmove', touchMove, { passive: false });
+
+    // let baseimg = new Image();
+    // baseimg.src = this.playerImgEndpoint + this.playerImgUrl;
+    // baseimg.height = window.innerWidth;
+    // baseimg.width = window.innerWidth;
+    // baseimg.onload = function () {
+    //   baseimg.setAttribute('crossorigin', 'anonymous');
+    //   ctx.drawImage(
+    //     baseimg,
+    //     0,
+    //     0,
+    //     baseimg.width,
+    //     baseimg.height,
+    //     0,
+    //     0,
+    //     canvas.width,
+    //     canvas.width
+    //   );
+    // };
   }
 
   setNavExtras(nav_extras) {
@@ -193,7 +218,7 @@ export class DrawComponent implements OnInit, AfterViewInit {
     let imgUrl = 'this should be overridden';
     this.canvas.nativeElement.toBlob(function (blob) {
       let formData = new FormData();
-      that.playerImgUrl = `${that.username + '_' + that.roomCode}.png`;
+      that.playerImgUrl = `${this.id}_${this.username}_${this.roomCode}.png`;
       imgUrl = that.playerImgUrl;
       formData.append('img', blob, that.playerImgUrl);
 
@@ -203,6 +228,8 @@ export class DrawComponent implements OnInit, AfterViewInit {
         state: {
           roomCode: that.roomCode,
           username: that.username,
+          imgUrl: imgUrl,
+          id: that.id,
           color1: that.color1,
           color2: that.color2,
         },
@@ -218,7 +245,7 @@ export class DrawComponent implements OnInit, AfterViewInit {
       //   drawPlayer.name = that.username;
       //   drawPlayer.imgUrl = imgUrl;
 
-      that._drawService.associateUserData(that.roomCode, that.username, imgUrl);
+      that._drawService.associateUserUrl(that.roomCode, that.username, imgUrl);
 
       fetch(environment.image_upload_endpoint, {
         method: 'POST',

@@ -4,18 +4,20 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  OnDestroy,
 } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { DrawService } from 'src/app/Services/draw.service';
 import { IDrawPlayer } from 'src/app/Models/IDrawPlayer';
 import { environment } from '../../../environments/environment';
+import { DrawPlayer } from 'src/app/Models/DrawPlayer';
 
 @Component({
   selector: 'app-prompt',
   templateUrl: './prompt.component.html',
   styleUrls: ['./prompt.component.sass'],
 })
-export class PromptComponent implements OnInit, AfterViewInit {
+export class PromptComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas') canvas: ElementRef;
   @ViewChild('clearCanvasBtn') clearCanvasBtn: ElementRef;
   @ViewChild('avatarBtn') avatarbtn: ElementRef;
@@ -23,17 +25,36 @@ export class PromptComponent implements OnInit, AfterViewInit {
   @ViewChild('color2') colorBtn2: ElementRef;
   @ViewChild('prompt') prompt: ElementRef;
   @ViewChild('counter') counter: ElementRef;
+  @ViewChild('timeleft', { static: false }) countdowntimer: ElementRef;
 
   navigationExtras: NavigationExtras = {};
   activeColor: string;
   roomCode: string;
-  sending: boolean = false;
+  //   sending: boolean = false;
   timeLeft: number = 60;
   intervalTimer: any;
+
   promptToDraw: string = 'fetching prompt ...';
   player: IDrawPlayer;
 
+  promptLobby: boolean = false;
+  playerImgUrl: string;
+  isAdmin: boolean = false;
+  promptLobbyPlayers: DrawPlayer[] = [];
+  garysList: DrawPlayer[] = [];
+  countdown: boolean = false;
+  countdownTimer: any = null;
+  secondsBeforeRouting: number = 5;
+  promptRoundURL: string = '';
+
+  garyTrail: string = '';
+  garyIntervalTimer: any;
+
   constructor(private router: Router, private _drawService: DrawService) {
+    this.isAdmin = false;
+
+    this.playerImgUrl = environment.player_image_url;
+
     let navigation = this.router.getCurrentNavigation();
     const state = navigation.extras.state as {
       roomCode: string;
@@ -43,6 +64,16 @@ export class PromptComponent implements OnInit, AfterViewInit {
     this.roomCode = state.roomCode;
     this.player = state.player;
     this.activeColor = state.player.color1;
+
+    if (state.player.isAdmin) {
+      this.isAdmin = true;
+    }
+  }
+  ngOnDestroy(): void {
+    this._drawService.getDrawHubConnection().off('FetchedPrompt');
+    this._drawService.getDrawHubConnection().off('FetchedRandomPromptRound');
+    this._drawService.getDrawHubConnection().off('connectedDrawUsers');
+    this._drawService.getDrawHubConnection().off('FetchedNewLobbyArrivals');
   }
 
   ngOnInit(): void {
@@ -54,7 +85,47 @@ export class PromptComponent implements OnInit, AfterViewInit {
         this.promptToDraw = prompt;
       });
 
+    this.garyIntervalTimer = setInterval(this.garyIntervalTimerFunction, 1000);
     this.intervalTimer = setInterval(this.timeLeftInRoundFunction, 1000);
+
+    this._drawService
+      .getDrawHubConnection()
+      .on('FetchedRandomPromptRound', (gameRoundDTO: any) => {
+        this.promptRoundURL = gameRoundDTO.url;
+        this.countdown = true;
+        this.countdownTimer = setInterval(
+          this.timeLeftBeforeRoutingInterval,
+          1000
+        );
+      });
+
+    this._drawService
+      .getDrawHubConnection()
+      .invoke('GetConnectedDrawUsers', this.roomCode)
+      .catch((err) =>
+        console.log('error getting connected draw users in prompt ' + err)
+      );
+
+    this._drawService
+      .getDrawHubConnection()
+      .on('connectedDrawUsers', (garys: DrawPlayer[]) => {
+        // this.promptToDraw = prompt;
+        this.garysList = garys;
+      });
+
+    this._drawService
+      .getDrawHubConnection()
+      .on('FetchedNewLobbyArrivals', (players: IDrawPlayer[]) => {
+        this.promptLobbyPlayers = players;
+
+        this.garysList.forEach((gary) => {
+          players.forEach((plyr) => {
+            if (gary.name == plyr.name && plyr.stillDrawing == false) {
+              gary.stillDrawing = false;
+            }
+          });
+        });
+      });
   }
 
   stopInterval = () => {
@@ -64,17 +135,28 @@ export class PromptComponent implements OnInit, AfterViewInit {
     // this._drawService.
     this.submitArt();
 
-    this._drawService.newPromptLobbyArrival(this.roomCode, this.player);
+    this.player.stillDrawing = false;
+
+    // this._drawService.newPromptLobbyArrival(this.roomCode, this.player);
+    this._drawService
+      .getDrawHubConnection()
+      .invoke('NewLobbyArrival', this.roomCode, this.player)
+      .catch((err) => console.log('error invoking new lobby arrival ' + err));
 
     // THEN head to promptLobby
-    this.navigationExtras = {
-      state: {
-        roomCode: this.roomCode,
-        player: this.player,
-      },
-    };
+    // this.navigationExtras = {
+    //   state: {
+    //     roomCode: this.roomCode,
+    //     player: this.player,
+    //   },
+    // };
 
-    this.router.navigate([`/promptlobby`], this.navigationExtras);
+    // instead of navigating to a new route, lets just change the html,
+    // show the prompt lobby html, the reason we want to do it this way
+    // it greatly simplifies the simultaneous start of timer which the garys
+    // follow ^_^
+    this.promptLobby = true;
+    // this.router.navigate([`/promptlobby`], this.navigationExtras);
   };
 
   submitArt = () => {
@@ -105,7 +187,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
 
   timeLeftInRoundFunction = () => {
     if (this.timeLeft >= 0) {
-      this.counter.nativeElement.innerHTML = this.timeLeft--;
+      this.counter.nativeElement.innerHTML = this.timeLeft;
     } else {
       this.stopInterval();
     }
@@ -240,5 +322,72 @@ export class PromptComponent implements OnInit, AfterViewInit {
     return {
       'background-color': this.player.color2,
     };
+  }
+
+  /**       PROMPT LOBBY CODE BELOW HERE  */
+  timeLeftBeforeRoutingInterval = () => {
+    if (this.countdownTimer != null) {
+      if (this.secondsBeforeRouting < 0) {
+        clearInterval(this.countdownTimer);
+        this.countdownTimer = null;
+
+        console.log('here is where we transition to the next route');
+        this.stopRoutingInterval();
+        this.countdowntimer = null;
+
+        this.navigationExtras = {
+          state: {
+            roomCode: this.roomCode,
+            player: this.player,
+            promptRoundURL: this.promptRoundURL,
+          },
+        };
+
+        this.router.navigate([`/guessprompt`], this.navigationExtras);
+      } else {
+        this.countdowntimer.nativeElement.innerHTML = this
+          .secondsBeforeRouting--;
+      }
+    }
+  };
+
+  stopRoutingInterval = () => {
+    clearInterval(this.countdownTimer);
+  };
+
+  startPrompt = () => {
+    console.log('admin tapped start prompt');
+
+    this._drawService.startPrompt(this.roomCode);
+  };
+
+  garyIntervalTimerFunction = () => {
+    // since we are counting down 60 here
+    // this seems like a good place to tick the moving of the garys
+
+    //   if (this.timeLeft >= 0) {
+    //     this.counter.nativeElement.innerHTML = this.timeLeft--;
+
+    //   } else {
+    //     this.stopInterval();
+    //   }
+    this.timeLeft--;
+
+    if (this.timeLeft < 0) {
+      this.stopGaryInterval();
+    }
+
+    if (this.timeLeft % 2 == 0) {
+      this.garysList.forEach((gary) => {
+        if (gary.stillDrawing) {
+          gary.garyTrail += '_';
+        }
+      });
+      // if player still exists in garyTrail
+    }
+  };
+
+  stopGaryInterval() {
+    clearInterval(this.garyIntervalTimer);
   }
 }

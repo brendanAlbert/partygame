@@ -29,7 +29,7 @@ namespace partygame
         public void ConfigureServices(IServiceCollection services)
         {
             // services.AddDbContext<DataContext>(c => c.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddAutoMapper(typeof(Startup));
             services.AddScoped<ITriviaService, TriviaService>();
             services.AddCors(options =>

@@ -12,6 +12,7 @@ export const environment = {
   hackers_api_endpoint: `${host}:${port}/hackers`,
   drawHubUrl: `${host}:${port}/drawhub`,
   image_upload_endpoint: `${host}:${port}/draw/images/upload`,
+  avatar_copy_endpoint: `${host}:${port}/draw/images/copy`,
   player_image_url: `${host}:${port}/draw/images/`,
   prompt_image_upload_url: `${host}:${port}/draw/images/prompts/upload`,
   get_prompt_image_url: `${host}:${port}/draw/images/prompts/`,

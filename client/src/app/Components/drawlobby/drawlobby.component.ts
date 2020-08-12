@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  OnDestroy,
+} from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { IDrawPlayer } from '../../Models/IDrawPlayer';
 import { DrawPlayer } from '../../Models/DrawPlayer';
@@ -10,14 +16,14 @@ import { DrawService } from '../../Services/draw.service';
   templateUrl: './drawlobby.component.html',
   styleUrls: ['./drawlobby.component.sass'],
 })
-export class DrawlobbyComponent implements OnInit {
+export class DrawlobbyComponent implements OnInit, OnDestroy {
   @ViewChild('timeleft', { static: false }) countdowntimer: ElementRef;
   roomCode: string = '';
   username: string = '';
   inRoom: boolean = false;
   hasUsername: boolean = false;
   isAdmin: boolean = false;
-  roomPlayers: string[] = [];
+  //   roomPlayers: string[] = [];
   roomDrawPlayers: IDrawPlayer[] = [];
   navigationExtras: NavigationExtras = {};
   playerImgUrl: string;
@@ -29,6 +35,13 @@ export class DrawlobbyComponent implements OnInit {
   timer: any = null;
   secondsLeft: number = 5;
   player: IDrawPlayer = new DrawPlayer();
+  drawMyOwn: boolean = false;
+  placeHolderImg: string = '';
+  readyToStart: boolean = false;
+
+  id: string;
+
+  gameLobbyLoaderTimer: any;
 
   constructor(private router: Router, private _drawService: DrawService) {
     this.playerImgUrl = environment.player_image_url;
@@ -40,9 +53,10 @@ export class DrawlobbyComponent implements OnInit {
     const state = navigation.extras.state as {
       roomCode: string;
       username: string;
+      imgUrl: string;
+      id: string;
       color1: string;
       color2: string;
-      //   imgUrl: string;
     };
     if (state) {
       this.roomCode = state.roomCode;
@@ -55,6 +69,9 @@ export class DrawlobbyComponent implements OnInit {
       this.player.color2 = state.color2;
       this.player.name = state.username;
       this.playerImgReceived = true;
+      this.readyToStart = true;
+      this.player.imageUrl = state.imgUrl;
+      this.id = state.id;
     }
   }
 
@@ -62,11 +79,15 @@ export class DrawlobbyComponent implements OnInit {
     return this.color1;
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    this._drawService.getDrawHubConnection().off('StartGame');
+    this._drawService.getDrawHubConnection().off('connectedDrawUsers');
+    this._drawService.getDrawHubConnection().off('FetchedYourImgUrl');
+  }
 
   ngOnInit(): void {
     if (this._drawService.isConnectionSet() == true) {
-      this._drawService.listenStartGame();
+      //   this._drawService.listenStartGame();
       this._drawService.getDrawHubConnection().on('StartGame', () => {
         this.countdown = true;
         if (this.timer == null) {
@@ -78,96 +99,169 @@ export class DrawlobbyComponent implements OnInit {
       this._drawService.startConnection();
     }
 
+    this._drawService
+      .getDrawHubConnection()
+      .on('connectedDrawUsers', (drawPlayers: IDrawPlayer[]) => {
+        console.log('users from draw service : ');
+        console.log(drawPlayers);
+
+        this.roomDrawPlayers = drawPlayers;
+
+        drawPlayers.forEach((player) => {
+          if (
+            player.isAdmin &&
+            player.name == this.username &&
+            player.id == this.id
+          ) {
+            this.isAdmin = true;
+            this.placeHolderImg = player.imageUrl;
+          }
+          if (player.name == this.username && player.id == this.id) {
+            this.player = player;
+            this.placeHolderImg = player.imageUrl;
+          }
+        });
+
+        //   this.roomUsers = users;
+        // this.incomingDrawPlayer.emit(users);
+      });
+
     this.subscribeToEvents();
 
     if (this.roomCode !== '') {
       this._drawService.listenForAddDrawGroup();
     } else {
       this._drawService.listenGetActiveDrawGameLobbies();
-      setTimeout(() => {
-        this._drawService.getActiveDrawGameLobbies();
-      }, 500);
     }
 
     this.countdown = false;
+
+    if (this.activeDrawGameLobbies.length == 0) {
+    }
+
+    if (
+      !this.readyToStart &&
+      (this.roomCode == '' || this.activeDrawGameLobbies.length == 0)
+    ) {
+      this.gameLobbyLoaderTimer = setInterval(() => {
+        this._drawService.getActiveDrawGameLobbies();
+      }, 1000);
+    }
   }
 
   enterRoom(roomcode: string) {
+    clearInterval(this.gameLobbyLoaderTimer);
+
     this.roomCode = roomcode.toUpperCase();
-    this.roomCode = roomcode;
     this.inRoom = true;
-    // this.navigationExtras = {
-    //   state: {
-    //     roomCode: this.roomCode,
-    //     // player: this.player,
-    //   },
-    // };
-    this._drawService.drawUserListener(roomcode);
+
+    // this._drawService.drawUserListener(roomcode);
     this._drawService.addDrawUser(roomcode);
     this._drawService.getConnectedDrawUsers(roomcode);
-    // if (this.roomCode !== '') {
-    //   }
-    // this.router.navigate([`/draw`], this.navigationExtras);
+    // this._drawService.fetchPlaceholderImg(roomcode);
+
+    // this is to show the placeholder img avatar at the username choosing stage
+    this._drawService
+      .getDrawHubConnection()
+      .invoke('FetchMyPlaceholderImgUrl', this.roomCode)
+      .catch((err) => {
+        console.log('error fetching my placeholder img url ' + err);
+      });
+
+    this._drawService
+      .getDrawHubConnection()
+      .on('FetchedYourImgUrl', (imgUrl: string) => {
+        this.placeHolderImg = imgUrl;
+      });
   }
 
   addusername(username: string) {
-    // this._drawService.associateUserData(
-    //   this.roomCode,
-    //   username,
-    //   'test_test.png'
-    // );
     this.username = username;
     this.hasUsername = true;
-    this._drawService.associateUserData(
-      this.roomCode,
-      username,
-      'Dildo baggins_test.png'
-    );
+    this.id = this.generateUUID();
+    this._drawService.associateUserData(this.roomCode, username, this.id);
     this._drawService.getConnectedDrawUsers(this.roomCode);
     this._drawService.getActiveDrawGameLobbies();
-
-    // wait a second before navigating away, we need the color1/2
-    let color1: string;
-    let color2: string;
 
     setTimeout(() => {
       this.roomDrawPlayers.forEach((player) => {
         console.log(`player.name == ${player.name}  username == ${username}`);
         if (player.name == username) {
-          color1 = player.color1;
-          color2 = player.color2;
+          this.color1 = player.color1;
+          this.color2 = player.color2;
         }
       });
-
-      this.navigationExtras = {
-        state: {
-          roomCode: this.roomCode,
-          username: this.username,
-          color1: color1,
-          color2: color2,
-        },
-      };
-
-      this.router.navigate([`/draw`], this.navigationExtras);
     }, 1500);
   }
 
-  private subscribeToEvents = () => {
-    this._drawService.incomingDrawPlayer.subscribe(
-      (drawPlayers: IDrawPlayer[]) => {
-        this.roomDrawPlayers = drawPlayers;
-
-        drawPlayers.forEach((player) => {
-          if (player.isAdmin && player.name == this.username) {
-            this.isAdmin = true;
-          }
-          if (player.name == this.username) {
-            this.player = player;
-          }
-        });
-      }
+  keepplaceholder() {
+    this.readyToStart = true;
+    this._drawService.keepAvatar(
+      this.roomCode,
+      this.username,
+      this.username + '_' + this.roomCode + '.png'
     );
 
+    // this._drawService.listenStartGame();
+    this._drawService.getDrawHubConnection().on('StartGame', () => {
+      this.countdown = true;
+      if (this.timer == null) {
+        this.timer = setInterval(this.timeLeftTimer, 1000);
+      }
+    });
+
+    let imgurl = `${this.id}_${this.username}_${this.roomCode}.png`;
+
+    const imgUrlsToCopy = {
+      originalUrl: this.placeHolderImg,
+      newImageUrl: imgurl,
+    };
+    fetch(environment.avatar_copy_endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(imgUrlsToCopy),
+    })
+      .then((res) => res.json())
+      .then((text) => {
+        console.log('img url returned after copying ' + text.newImageUrl);
+        this.player.imageUrl = text.newImageUrl;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    this._drawService.associateUserUrl(this.roomCode, this.username, imgurl);
+  }
+
+  generateUUID(): string {
+    let randomCharacters =
+      '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let stringToReturn = '';
+
+    for (let i = 0; i < 5; i++) {
+      stringToReturn +=
+        randomCharacters[Math.floor(Math.random() * randomCharacters.length)];
+    }
+    return stringToReturn;
+  }
+
+  drawmyown() {
+    this.drawMyOwn = true;
+    this.navigationExtras = {
+      state: {
+        roomCode: this.roomCode,
+        username: this.username,
+        imgUrl: this.placeHolderImg,
+        id: this.id,
+        color1: this.color1,
+        color2: this.color2,
+      },
+    };
+
+    this.router.navigate([`/draw`], this.navigationExtras);
+  }
+
+  private subscribeToEvents = () => {
     this._drawService.activeGameLobbies.subscribe((activeLobbies: string[]) => {
       this.activeDrawGameLobbies = activeLobbies;
     });
@@ -203,6 +297,14 @@ export class DrawlobbyComponent implements OnInit {
 
   startGame = () => {
     console.log('admin tapped start game');
-    this._drawService.startGame(this.roomCode);
+    // this._drawService.startGame(this.roomCode);
+    this.roomCode = this.roomCode.toUpperCase();
+
+    this._drawService
+      .getDrawHubConnection()
+      .invoke('StartGame', this.roomCode)
+      .catch((err) => {
+        console.log('error attempting to start game ' + err);
+      });
   };
 }

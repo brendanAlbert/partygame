@@ -8,6 +8,7 @@ namespace api.Models
     {
         public string RoomName { get; set; } = "";
         public int RoundNumber { get; set; } = 0;
+        public bool LastRound { get; set; } = false;
         public List<DrawPlayer> DrawPlayers { get; set; } = new List<DrawPlayer>();
         Random rnd = new Random();
 
@@ -17,7 +18,29 @@ namespace api.Models
 
         public List<DrawGameRound> CurrentRound { get; set; } = new List<DrawGameRound>();
 
-
+        public List<string> FunnyPlaceholderImages { get; set; } = new List<string>
+        {
+            "🧠_dckbt_placeholder.png",
+            "🧠_derpboi_placeholder.png",
+            "🧠_dolan_placeholder.png",
+            "🧠_doomer_placeholder.png",
+            "🧠_douknodawae1_placeholder.png",
+            "🧠_gooby_placeholder.png",
+            "🧠_handsome_placeholder.png",
+            "🧠_haterdab_placeholder.png",
+            "🧠_hipsterhand_placeholder.png",
+            "🧠_lenny_placeholder.png",
+            "🧠_pepe1_placeholder.png",
+            "🧠_pepe2_placeholder.png",
+            "🧠_poohsophist_placeholder.png",
+            "🧠_rarest_placeholder.png",
+            "🧠_shrek_placeholder.png",
+            "🧠_shrekt_placeholder.png",
+            "🧠_sockpuppet_placeholder.png",
+            "🧠_spongeboob_placeholder.png",
+            "🧠_spooder_placeholder.png",
+            "🧠_ulikekrabbypatties_placeholder.png",
+        };
 
         public List<string> AvailableColor1List { get; set; } = new List<string>
         {
@@ -142,7 +165,8 @@ namespace api.Models
             "ragnar - slayer of booty",
             "ky jelly, alcohol, and a night of experimentation",
             "jean-luc picard of the uss enterprise",
-            "chad goes deep"
+            "chad goes deep",
+            "four inches of fury"
         };
 
         public Tuple<string, string> GetColorPair()
@@ -176,8 +200,14 @@ namespace api.Models
         {
             int index = rnd.Next(0, this.GameRounds.Count);
             DrawGameRound dgr = this.GameRounds[index];
-            this.CurrentRound.Add(dgr);
             this.GameRounds.RemoveAt(index);
+            if (this.GameRounds.Count == 0)
+            {
+                this.LastRound = true;
+                dgr.LastRound = true;
+            }
+
+            this.CurrentRound.Add(dgr);
             return dgr;
         }
 
@@ -186,6 +216,8 @@ namespace api.Models
             int currentRoundIndex = this.CurrentRound.Count - 1;
             this.CurrentRound[currentRoundIndex].AllAnswers.Add(playerGuess);
             this.CurrentRound[currentRoundIndex].Players.Add(drawPlayer);
+            // This player created this answer/guess.  So if anyone chooses this guess, this player gets points.
+            this.CurrentRound[currentRoundIndex].ListPlayerAnswerSubmissions.Add(new Tuple<DrawPlayer, string>(drawPlayer, playerGuess));
             return this.CurrentRound[currentRoundIndex].Players;
         }
 
@@ -204,8 +236,18 @@ namespace api.Models
         {
             int currentRoundIndex = this.CurrentRound.Count - 1;
 
+            foreach (DrawPlayer dp in this.DrawPlayers)
+            {
+                if (drawPlayer.Name == dp.Name)
+                {
+                    drawPlayer.Score = dp.Score;
+                    break;
+                }
+            }
+
             this.CurrentRound[currentRoundIndex].PlayersWaiting.Add(drawPlayer);
 
+            // need to associate each answer and a list of users who guessed that answer rather than just adding each answer to the list
             this.CurrentRound[currentRoundIndex].ListPlayerAnswerTuples.Add(new Tuple<DrawPlayer, string>(drawPlayer, chosenAnswer));
         }
 
@@ -216,6 +258,95 @@ namespace api.Models
             return this.CurrentRound[currentRoundIndex].PlayersWaiting;
         }
 
+        public DrawGameRound FetchGameRoundResults()
+        {
+            int currentRoundIndex = this.CurrentRound.Count - 1;
 
+            DrawGameRound dgr = this.CurrentRound[currentRoundIndex];
+
+            Console.WriteLine($"The answer was = {dgr.Answer}");
+            foreach (Tuple<DrawPlayer, string> tple in dgr.ListPlayerAnswerTuples)
+            {
+                Console.WriteLine($"{tple.Item1.Name}'s img url {tple.Item1.ImageUrl}");
+
+
+                foreach (DrawPlayer dp in this.DrawPlayers)
+                {
+                    Console.WriteLine($"{tple.Item1.Name}'s score is {dp.Score}");
+                    if (tple.Item1.Name == dp.Name)
+                    {
+                        Console.WriteLine($"UPDATING {tple.Item1.Name}'s SCORE TO {dp.Score}");
+                        tple.Item1.Score = dp.Score;
+                        break;
+                    }
+                }
+
+            }
+
+            foreach (DrawPlayer dp in dgr.Players)
+            {
+                foreach (DrawPlayer thisdp in this.DrawPlayers)
+                {
+                    if (thisdp.Name == dp.Name)
+                    {
+                        Console.WriteLine($"UPDATING {thisdp.Name}'s SCORE TO {thisdp.Score}");
+                        dp.Score = thisdp.Score;
+                        break;
+                    }
+                }
+            }
+
+            return dgr;
+        }
+
+        public string PopRandomPlaceholderImage()
+        {
+            int index = rnd.Next(0, this.FunnyPlaceholderImages.Count);
+            string img = this.FunnyPlaceholderImages[index];
+            this.FunnyPlaceholderImages.RemoveAt(index);
+            return img;
+        }
+
+        public void UpdatePlayersScores(List<DrawPlayer> drawPlayers)
+        {
+            foreach (DrawPlayer dp in this.DrawPlayers)
+            {
+                foreach (DrawPlayer incomingdp in drawPlayers)
+                {
+                    if (dp.Name == incomingdp.Name)
+                    {
+                        Console.WriteLine($"updating {dp.Name}'s score to {incomingdp.Score}");
+                        dp.Score = incomingdp.Score;
+                    }
+                }
+            }
+
+            int currentRoundIndex = this.CurrentRound.Count - 1;
+
+            foreach (Tuple<DrawPlayer, string> tpl in this.CurrentRound[currentRoundIndex].ListPlayerAnswerTuples)
+            {
+                foreach (DrawPlayer incomingdp in drawPlayers)
+                {
+                    if (tpl.Item1.Name == incomingdp.Name)
+                    {
+                        tpl.Item1.Score = incomingdp.Score;
+                    }
+                }
+            }
+
+            foreach (DrawPlayer dp in this.CurrentRound[currentRoundIndex].Players)
+            {
+                foreach (DrawPlayer incomingdp in drawPlayers)
+                {
+                    if (dp.Name == incomingdp.Name)
+                    {
+                        dp.Score = incomingdp.Score;
+                    }
+                }
+            }
+
+
+
+        }
     }
 }

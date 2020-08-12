@@ -1,16 +1,31 @@
-<link
-  href="https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap"
+<!-- <link
+  href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap"
   rel="stylesheet"
 />
+
 <div class="container">
   <div class="draw-lobby-container">
-    <h1>Prompt Lobby</h1>
+    <h3>Prompt Lobby</h3>
 
     <div *ngIf="inRoom" class="room-code-container">
       <p>room code:</p>
-      <h1 style="text-transform: uppercase;">{{ roomCode }}</h1>
+      <h4 style="text-transform: uppercase;">{{ roomCode }}</h4>
     </div>
 
+    <div *ngIf="inRoom" class="snails-container">
+      <!-- <div *ngFor="let item of list" class="gary-container">
+        <img class="gary" src="../../../assets/snail.png" />
+      </div> -->
+      <div class="gary-container">
+        <img class="gary" src="../../../assets/snail.png" />
+      </div>
+      <div class="gary-container">
+        <img class="gary" src="../../../assets/snail.png" />
+      </div>
+      <div class="gary-container">
+        <img class="gary" src="../../../assets/snail.png" />
+      </div>
+    </div>
     <div *ngIf="inRoom" class="players-container">
       <div class="player-grid">
         <div *ngFor="let player of promptLobbyPlayers">
@@ -18,8 +33,8 @@
             <div *ngIf="player.imageUrl != undefined">
               <img
                 src="{{ playerImgUrl + player.imageUrl }}"
-                width="80"
-                height="80"
+                width="60"
+                height="60"
               />
             </div>
 
@@ -59,10 +74,10 @@
         <button (click)="startPrompt()">start prompt</button>
       </div>
       <div *ngIf="!isAdmin" class="username-input-wrapper">
-        <h2>
+        <h6>
           waiting for other players to finish drawing and for the admin to start
           game
-        </h2>
+        </h6>
       </div>
     </section>
 
@@ -71,4 +86,4 @@
       <div #timeleft id="time-to-start">6</div>
     </div>
   </div>
-</div>
+</div> -->

@@ -14,7 +14,7 @@ import { SimonComponent } from './Components/simon/simon.component';
 import { DrawlobbyComponent } from './Components/drawlobby/drawlobby.component';
 import { DrawComponent } from './Components/draw/draw.component';
 import { PromptComponent } from './Components/prompt/prompt.component';
-import { PromptlobbyComponent } from './Components/promptlobby/promptlobby.component';
+// import { PromptlobbyComponent } from './Components/promptlobby/promptlobby.component';
 import { GuesspromptComponent } from './Components/guessprompt/guessprompt.component';
 import { PromptresultsComponent } from './Components/promptresults/promptresults.component';
 
@@ -31,7 +31,7 @@ import { PromptresultsComponent } from './Components/promptresults/promptresults
     DrawlobbyComponent,
     DrawComponent,
     PromptComponent,
-    PromptlobbyComponent,
+    // PromptlobbyComponent,
     GuesspromptComponent,
     PromptresultsComponent,
   ],

@@ -4,6 +4,7 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  OnDestroy,
 } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { environment } from '../../../environments/environment';
@@ -16,7 +17,7 @@ import { IDrawPlayer } from 'src/app/Models/IDrawPlayer';
   templateUrl: './guessprompt.component.html',
   styleUrls: ['./guessprompt.component.sass'],
 })
-export class GuesspromptComponent implements OnInit, AfterViewInit {
+export class GuesspromptComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('art') art: ElementRef;
   roomCode: string = '';
   player: DrawPlayer;
@@ -26,6 +27,7 @@ export class GuesspromptComponent implements OnInit, AfterViewInit {
   playersWhoHaveGuessed: DrawPlayer[] = [];
   seeAllGuesses: boolean = false;
   allGuesses: string[] = [];
+  myGuess: string = '';
   guessBorders: any[] = [];
   originalGuessBorders: any[] = [];
   selectedAnswer: number;
@@ -63,6 +65,15 @@ export class GuesspromptComponent implements OnInit, AfterViewInit {
       this.isAdmin = true;
     }
   }
+  ngOnDestroy(): void {
+    this._drawService.getDrawHubConnection().off('FetchedNewPlayerGuesses');
+    this._drawService
+      .getDrawHubConnection()
+      .off('FetchPlayersWaitingToSeeResults');
+    this._drawService
+      .getDrawHubConnection()
+      .off('FetchedAllGuessesForPromptRound');
+  }
 
   ngOnInit(): void {
     this._drawService
@@ -79,6 +90,10 @@ export class GuesspromptComponent implements OnInit, AfterViewInit {
         this.playersWhoHaveGuessed = [];
 
         this.seeAllGuesses = true;
+
+        // we don't want players picking their own guesses
+        allAnswers = allAnswers.filter((ans) => ans != this.myGuess);
+
         this.allGuesses = allAnswers;
         allAnswers.forEach((answer, index) => {
           let newborder = this.buildRandomBorder(index);
@@ -105,6 +120,7 @@ export class GuesspromptComponent implements OnInit, AfterViewInit {
         state: {
           roomCode: this.roomCode,
           player: this.player,
+          promptRoundURL: this.promptRoundURL,
         },
       };
 
@@ -121,7 +137,7 @@ export class GuesspromptComponent implements OnInit, AfterViewInit {
 
   adduserguess(userGuess: string) {
     this.guessAdded = true;
-
+    this.myGuess = userGuess;
     this._drawService.addUserGuessForPrompt(
       this.roomCode,
       this.player,
@@ -182,6 +198,8 @@ export class GuesspromptComponent implements OnInit, AfterViewInit {
   }
 
   confirmAnswer() {
+    console.log('player we are adding to list waiting to see results');
+    console.log(this.player);
     this.seeAllGuesses = false;
     this.showModal = false;
     this._drawService.addPlayerToListWaitingToSeeResults(

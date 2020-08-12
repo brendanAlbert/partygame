@@ -1,9 +1,9 @@
 <link
-  href="https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap"
   rel="stylesheet"
 />
 
-<div *ngIf="!sending">
+<div *ngIf="promptLobby == false">
   <canvas #canvas id="canvas"></canvas>
 
   <div class="draw-wrapper">
@@ -33,6 +33,45 @@
   </footer>
 </div>
 
-<div *ngIf="sending" class="sending-screen">
-  submitting your image showing first drawing ...
+<div *ngIf="promptLobby == true" class="prompt-lobby-container">
+  <h3>Prompt Lobby</h3>
+
+  <div class="snails-container">
+    <div *ngFor="let gary of garysList" class="gary-container">
+      <span [style.color]="gary.color1">
+        {{ gary.garyTrail }}
+      </span>
+      <img class="gary" src="../../../assets/snail.png" />
+      <span class="img-name-wrapper">
+        <img
+          *ngIf="gary.stillDrawing == false"
+          class="gary"
+          src="{{ playerImgUrl + gary.imageUrl }}"
+          width="70"
+          height="=70"
+        />
+        <small [style.color]="gary.color1">{{ gary.name }}</small>
+      </span>
+    </div>
+  </div>
+
+  <section class="join-game-section border-gradient-purple">
+    <div
+      *ngIf="isAdmin && promptLobbyPlayers.length == garysList.length"
+      class="waiting-wrapper"
+    >
+      <button (click)="startPrompt()">start prompt</button>
+    </div>
+    <div *ngIf="!isAdmin" class="waiting-wrapper">
+      <h6>
+        waiting for other players to finish drawing and for the admin to start
+        game
+      </h6>
+    </div>
+  </section>
+
+  <div *ngIf="countdown" class="countdown">
+    <div>let's see some amazing artwork in -</div>
+    <div #timeleft id="time-to-start">6</div>
+  </div>
 </div>

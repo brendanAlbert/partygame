@@ -4,7 +4,7 @@
     box-sizing: border-box
 
 p, h1,h2,h3,h4,h5,h6, a, button, div
-    font-family: 'Waiting for the Sunrise', cursive
+    font-family: 'Comic Neue', cursive
 
 #canvas
     border-bottom: 3px dashed palevioletred
@@ -57,3 +57,156 @@ p, h1,h2,h3,h4,h5,h6, a, button, div
     border-image-slice: 1
     border-width: 8px
     border-image-source: linear-gradient(to left, #743ad5, #d53a9d)
+
+// BELOW THIS LINE ARE THE PROMPTLOBBY STYLES
+
+.prompt-lobby-container
+    margin-top: 10px
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+
+.room-code-container
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    border-radius: 20px
+
+    padding: 12px 60px
+    background-color: #222
+    margin-top: 10px
+
+    & p
+        font-size: 26px
+        margin: 0
+        color: #fff
+
+    & h1,h4
+        font-size: 60px
+        margin: 0
+        background: -webkit-linear-gradient(#743ad5, #d53a9d)
+        -webkit-background-clip: text
+        -webkit-text-fill-color: transparent
+    & h4
+        font-size: 40px
+
+.player-grid
+    display: grid
+    grid-template-columns: repeat(3, 1fr)
+    grid-gap: 15px
+    margin: 10px
+
+.player-grid-box
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    text-align: center
+
+img
+    object-fit: contain
+
+.countdown
+    height: 100%
+    width: 100%
+    background: rgba(45, 45, 45, 0.5)
+    color: white
+    margin: 0 auto
+    position: fixed
+    top: 0
+    left: 0
+    z-index: 100
+    display: flex
+    flex-direction: column
+    justify-content: center
+    text-align: center
+    align-items: center
+    font-size: 30px
+
+#time-to-start
+    font-size: 50px
+
+.snails-container
+    width: 100%
+
+    & :nth-child(odd)
+        // transform: scaleX(-1)
+        // & .gary-container
+        & .img-name-wrapper
+            transform: translateX(-1px)
+            & img
+                transform: scaleX(1)
+
+    & :nth-child(even)
+        // transform: scaleX(-1)
+        // & .gary-container
+        & .img-name-wrapper
+            transform: translateX(-1px)
+            & img
+                transform: scaleX(1)
+
+    & img
+        transform: scaleX(-1) translateX(10px) translateY(-2px)
+
+    // & :nth-child(even)
+    //     & .gary-container
+    //         transform: scaleX(-1)
+
+.gary-container
+    position: relative
+    & img
+        width: 35px
+        height: auto
+
+.join-game-section
+    position: relative
+    padding: 20px
+    margin: 0 auto
+    margin-top: 20px
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    background: #000
+    width: 100%
+    border-radius: 5px
+
+    & h2, h4
+        font-size: 32px
+        background: -webkit-linear-gradient(#743ad5, #d53a9d)
+        -webkit-background-clip: text
+        -webkit-text-fill-color: transparent
+
+.waiting-wrapper
+    display: flex
+    width: 100%
+    justify-content: space-around
+    align-items: center
+
+    & button
+        padding: 6px 20px
+        background-color: white
+        font-size: 20px
+        border: 2px solid #10ac84
+
+    & h6
+        font-size: 20px
+        margin: 0
+        background: -webkit-linear-gradient(#743ad5, #d53a9d)
+        -webkit-background-clip: text
+        -webkit-text-fill-color: transparent
+
+.img-name-wrapper
+    position: relative
+    // top: 0
+    // left: 10px
+    // display: flex
+    display: inline-block
+    // flex-direction: column
+    // justify-content: center
+    align-items: center
+
+    & span
+        font-size: 12px

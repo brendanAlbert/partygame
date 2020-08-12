@@ -1,17 +1,7 @@
 
-h3
-    &:hover
-        cursor: pointer
-        &:nth-child(2)
-            background-color: tomato
-        &:nth-child(3)
-            // box-shadow: 0px 0px 15px #666
-            background: lighten(#14FF80, 25%)
-        &:nth-child(4)
-            background-color: #f1c40f
-
 .btn-hacker
     color: black
+    width: 100%
     padding: 10px
     background-color: #14FF80
     border: none
@@ -19,23 +9,30 @@ h3
     border-radius: 3px
     box-shadow: 0px 0px 15px#14FF80
 
-.bg
-    background: rgb(196,15,189)
-    background: linear-gradient(173deg, rgba(196,15,189,1) 0%, rgba(0,212,255,1) 100%)
+// .bg
+//     background: rgb(196,15,189)
+//     background: linear-gradient(173deg, rgba(196,15,189,1) 0%, rgba(0,212,255,1) 100%)
 
 .pix
     // position: absolute
     // left: 60%
-    height: 60px
+    // height: 20px
     width: 60px
+    height: auto
+
+.brain
+    height: 150px
+    width: 150px
 
 .wbg-btn
     // position: relative
     display: flex
     max-height: 65px
+    width: 100%
     justify-content: center
     align-items: center
-    border: 5px solid #f39c12
+    // border-radius: 25%
+    background-color: white
 
 .btn-wrapper
     display: flex
@@ -43,5 +40,52 @@ h3
     justify-content: space-evenly
     align-items: center
 
+    & div
+        background: -webkit-linear-gradient(#743ad5, #d53a9d)
+        -webkit-background-clip: text
+        -webkit-text-fill-color: transparent
+        background-color: white
+        color: black
+
 .bg-asphalt
     background-color: #34495e
+
+.menu-container
+    // position: fixed
+    // height: 75%
+    width: 90%
+    display: flex
+    margin: 0 auto
+    flex-direction: column
+    justify-content: center
+    align-items: center
+
+.trivia-btn
+    padding: 10px
+    border: none
+    width: 100%
+
+.buttons-container
+    width: 100%
+    display: flex
+    flex-direction: column
+    justify-content: space-evenly
+
+.menu-btn
+    padding: 10px
+    margin-top: 10px
+    display: flex
+    justify-content: center
+    align-items: center
+
+.border-gradient-purple
+    border: 14px solid
+    border-image-slice: 1
+    border-width: 8px
+    border-image-source: linear-gradient(to left, #743ad5, #d53a9d)
+
+.dg-btn
+    border: 5px solid #743ad5
+
+.tg-btn
+    border: 5px solid #f39c12

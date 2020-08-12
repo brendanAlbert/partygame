@@ -1,10 +1,183 @@
 <link
-  href="https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap"
   rel="stylesheet"
 />
 
-<div class="container">
-  <h2>results of round</h2>
-  <div class="player-container"></div>
-  <div class="answers-container"></div>
+<div
+  #resultsContainer
+  class="results-container"
+  *ngIf="headingToNextRound == false"
+>
+  <h6 class="fade-in-1sec hidden" *ngIf="!showFinalScoreScreen">
+    {{ funnyTaunt }}
+  </h6>
+  <div *ngIf="showFinalScoreScreen" class="final-score-button-menu">
+    <h5>alright folks, that's how the cookie crumbles</h5>
+    <h5>Final Score</h5>
+    <button routerLink="/">main menu</button>
+  </div>
+
+  <div class="img-container fade-in-3sec hidden" *ngIf="!showFinalScoreScreen">
+    <img #art src="" class="" alt="" />
+  </div>
+
+  <div
+    class="welcome-container hidden fade-in-5sec"
+    *ngIf="!showFinalScoreScreen"
+  >
+    <h6 class="">{{ afterRevealTaunt }}</h6>
+    <h6 class="hidden fade-in-7sec">{{ judgementTaunt }}</h6>
+  </div>
+
+  <!-- here we show all the players and have them jockey for first place -->
+  <div class="hidden fade-in-9sec players-container">
+    <div *ngFor="let player of scoreKeeperList" class="score-card">
+      <img
+        *ngIf="player"
+        src="{{ playerImgUrl + player?.imageUrl }}"
+        width="50"
+        height="=50"
+      />
+      <div class="score-board">
+        <div [style.color]="player.color1">{{ player.name }}</div>
+        <div [style.color]="player.color1">score:&nbsp;{{ player.score }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="answerObject && showAnswerResults == false && !headingToNextRound"
+    class="wrong-container toggle-hidden hidden"
+  >
+    <div class="reveal-container">
+      <h6>who chose answer:</h6>
+      <h4 style="text-align: center;">"{{ answerObject?.answer }}"</h4>
+      <div class="reveal-players-container">
+        <div
+          *ngFor="let player of answerObject?.answerers"
+          class="answer-grid-box"
+        >
+          <img
+            *ngIf="player"
+            src="{{ playerImgUrl + player?.imageUrl }}"
+            width="60"
+            height="=60"
+          />
+          <div [style.color]="player.color1">{{ player.name }}</div>
+          <div class="answer not-correct">+</div>
+          <input disabled class="answer not-correct" value="0" />
+        </div>
+
+        <!-- here is where we put the person who made this answer -->
+        <div
+          class="answer-grid-box"
+          *ngIf="answerObject.submitter != undefined"
+        >
+          <img
+            src="{{ playerImgUrl + answerObject.submitter.imageUrl }}"
+            width="60"
+            height="=60"
+          />
+          <div [style.color]="answerObject?.submitter?.color1">
+            {{ answerObject?.submitter?.name }}
+          </div>
+          <div class="answer correct">+</div>
+          <input disabled class="answer correct correct-input" value="0" />
+        </div>
+      </div>
+    </div>
+
+    <!-- <div>
+      <button (click)="showNext()">show next wrong answer</button>
+    </div> -->
+  </div>
+
+  <div
+    *ngIf="
+      answerObject &&
+      showAnswerResults &&
+      headingToNextRound == false &&
+      !showFinalScoreScreen
+    "
+    class="answers-container toggle-hidden hidden"
+  >
+    <div class="reveal-container">
+      <h6>who chose answer:</h6>
+      <h4 style="text-align: center;">"{{ answerObject?.answer }}"</h4>
+      <div class="reveal-players-container">
+        <div *ngIf="answerObject?.answerers?.length == 0">
+          <h3>nobody chose the right answer!</h3>
+
+          <div
+            *ngFor="let player of answerObject?.players"
+            class="answer-grid-box"
+          >
+            <img
+              *ngIf="player"
+              src="{{ playerImgUrl + player?.imageUrl }}"
+              width="60"
+              height="=60"
+            />
+            <div [style.color]="player.color1">{{ player.name }}</div>
+            <div class="answer not-correct">+</div>
+            <input disabled class="answer not-correct" value="0" />
+          </div>
+        </div>
+        <div *ngIf="answerObject?.answerers.length > 0">
+          <h3>the right answer!</h3>
+        </div>
+        <div
+          *ngFor="let player of answerObject?.answerers"
+          class="answer-grid-box"
+        >
+          <img
+            *ngIf="player"
+            src="{{ playerImgUrl + player?.imageUrl }}"
+            width="60"
+            height="=60"
+          />
+          <div [style.color]="player.color1">{{ player.name }}</div>
+          <div class="answer correct">+</div>
+          <input disabled class="answer correct" value="0" />
+        </div>
+      </div>
+    </div>
+
+    <!-- <div>
+      <button (click)="showNext()">show next wrong answer</button>
+    </div> -->
+  </div>
+
+  <div
+    *ngIf="headingToNextRound == false && showFinalScoreScreen == false"
+    class="admin-buttons-wrapper hidden"
+  >
+    <button
+      *ngIf="readyForNextRound == false && player.isAdmin"
+      (click)="triggerShowNext()"
+    >
+      show answer
+    </button>
+    <button
+      *ngIf="readyForNextRound && player.isAdmin && lastRound == false"
+      (click)="nextRound()"
+    >
+      head next round
+    </button>
+    <button
+      *ngIf="readyForNextRound && player.isAdmin && lastRound == true"
+      (click)="showFinalScore()"
+    >
+      show final score
+    </button>
+  </div>
+</div>
+
+<div *ngIf="headingToNextRound" class="time-left-next-round">
+  <div>
+    <h3>heading to next round in</h3>
+  </div>
+  <div>
+    <h1 #timeLeftUntilNextRound>{{ timeLeftTillNextRound }}</h1>
+  </div>
 </div>

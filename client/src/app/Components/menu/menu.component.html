@@ -1,28 +1,34 @@
-<div class="">
-  <div
-    class="container vh-100 d-flex flex-column justify-content-center text-center"
-  >
-    <h1>Wrinkle Brain Games</h1>
+<div class="menu-container">
+  <img class="brain" src="../../../assets/wrinkle_tech_brain.png" />
 
-    <h3 class="rounded-pill bg mt-5 p-3" routerLink="/lobby">
-      trivia game
-    </h3>
-    <h3 class="btn-hacker rounded-pill p-3" routerLink="/simonlobby">
-      hacker memory game
-    </h3>
+  <h1>Wrinkle Brain Games</h1>
+
+  <div class="buttons-container">
     <button
-      class="rounded-pill bg-asphalt text-light shadow-lg p-3 wbg-btn"
+      class="rounded-pill bg-asphalt text-light menu-btn wbg-btn tg-btn"
+      routerLink="/lobby"
+    >
+      trivia game
+    </button>
+
+    <button class="rounded-pill btn-hacker menu-btn" routerLink="/simonlobby">
+      hacker memory game
+    </button>
+
+    <button
+      class="rounded-pill menu-btn wbg-btn dg-btn"
       routerLink="/drawlobby"
     >
       <div class="btn-wrapper">
-        <h3>
-          drawing game
-        </h3>
         <img class="pix" src="../../../assets/snail.png" />
+        <div>
+          drawing game
+        </div>
       </div>
     </button>
-    <!-- <h3 class="rounded-pill bg-dark text-light shadow-lg p-3">
+  </div>
+
+  <!-- <h3 class="rounded-pill bg-dark text-light shadow-lg p-3">
       carrrd game
     </h3> -->
-  </div>
 </div>

@@ -1,10 +1,11 @@
 <link
-  href="https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap"
   rel="stylesheet"
 />
+
 <div class="container">
   <div class="draw-lobby-container">
-    <h1>Drawing Game Lobby</h1>
+    <h1>Drawing Lobby</h1>
 
     <div *ngIf="inRoom" class="room-code-container">
       <p>room code:</p>
@@ -36,7 +37,7 @@
             </div>
             <div *ngIf="player.imageUrl == undefined">
               <img
-                src="{{ playerImgUrl + 'Dildo baggins_test.png' }}"
+                src="{{ playerImgUrl + player.imageUrl }}"
                 width="80"
                 height="80"
               />
@@ -49,27 +50,50 @@
         </div>
       </div>
     </div>
-    <section *ngIf="!inRoom" class="join-game-section border-gradient-purple">
+    <section
+      *ngIf="!inRoom"
+      class="enter-room-code-section border-gradient-purple"
+    >
       <h2>enter room code:</h2>
       <div class="input-wrapper">
         <input #roomcode type="text" name="roomcode" maxlength="4" />
         <button (click)="enterRoom(roomcode.value)">enter!</button>
       </div>
     </section>
+
     <section
-      *ngIf="inRoom && !hasUsername"
+      *ngIf="inRoom && readyToStart == false"
       class="join-game-section border-gradient-purple"
     >
-      <h2>enter username:</h2>
-      <div class="username-input-wrapper">
-        <input
-          id="username-input"
-          #username
-          type="text"
-          name="username"
-          maxlength="20"
-        />
-        <button (click)="addusername(username.value)">add me!</button>
+      <div class="join-game-section-left" *ngIf="hasUsername == false">
+        <h2>step 1 of 2:</h2>
+        <h2>username</h2>
+        <div class="username-input-wrapper">
+          <input
+            id="username-input"
+            #username
+            type="text"
+            name="username"
+            maxlength="20"
+          />
+          <button (click)="addusername(username.value)">add me!</button>
+        </div>
+      </div>
+
+      <div class="placeholderimg-container" *ngIf="hasUsername == false">
+        <img src="{{ playerImgUrl + placeHolderImg }}" width="80" height="80" />
+      </div>
+      <div class="placeholderimg-container" *ngIf="hasUsername">
+        <img src="{{ playerImgUrl + placeHolderImg }}" width="80" height="80" />
+      </div>
+
+      <div class="join-game-section-right" *ngIf="hasUsername">
+        <h2>step 2 of 2:</h2>
+        <h2>choose avatar</h2>
+        <div class="image-choice-wrapper">
+          <button (click)="keepplaceholder()">keep this</button>
+          <button (click)="drawmyown()">draw new</button>
+        </div>
       </div>
     </section>
 
@@ -81,8 +105,8 @@
     </section> -->
 
     <section
-      *ngIf="hasUsername && playerImgReceived == true"
-      class="join-game-section border-gradient-purple"
+      *ngIf="readyToStart"
+      class="waiting-section border-gradient-purple"
     >
       <div *ngIf="isAdmin" class="username-input-wrapper">
         <button (click)="startGame()">start game</button>
@@ -93,7 +117,7 @@
     </section>
 
     <section
-      *ngIf="hasUsername && playerImgReceived == false"
+      *ngIf="hasUsername && playerImgReceived == false && drawMyOwn"
       class="join-game-section border-gradient-purple"
     >
       <div class="username-input-wrapper">

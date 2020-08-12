@@ -63,14 +63,14 @@ export class DrawService {
     });
   }
 
-  public drawUserListener = (roomCode: string) => {
-    this.drawHubConnection.on('connectedDrawUsers', (users: IDrawPlayer[]) => {
-      console.log('users from draw service : ');
-      console.log(users);
-      //   this.roomUsers = users;
-      this.incomingDrawPlayer.emit(users);
-    });
-  };
+  //   public drawUserListener = (roomCode: string) => {
+  //     this.drawHubConnection.on('connectedDrawUsers', (users: IDrawPlayer[]) => {
+  //       console.log('users from draw service : ');
+  //       console.log(users);
+  //       //   this.roomUsers = users;
+  //       this.incomingDrawPlayer.emit(users);
+  //     });
+  //   };
 
   public getActiveDrawGameLobbies() {
     console.log('getting active game lobbies ...');
@@ -89,39 +89,53 @@ export class DrawService {
     });
   }
 
-  public associateUserData(roomCode: string, userName: string, imgUrl: string) {
+  public associateUserData(roomCode: string, userName: string, id: string) {
     this.drawHubConnection
-      .invoke('AssociateUserWithId', userName, roomCode, imgUrl)
+      .invoke('AssociateUserWithId', userName, roomCode, id)
       .catch((err) =>
         console.log('error attempting to associate user info ' + err)
       );
   }
 
-  public startGame(room: string) {
-    room = room.toUpperCase();
-
-    this.drawHubConnection.invoke('StartGame', room).catch((err) => {
-      console.log('error attempting to start game ' + err);
-    });
-
-    // here we want to invoke the 65ish second count down on the server
-    // we do it here because it will only get invoked once, since there is only 1 admin
-
-    // this.drawHubConnection.invoke('StartDrawPromptTimer', room).catch((err) => {
-    //   console.log('error attempting to start prompt timer ' + err);
-    // });
+  public associateUserUrl(roomCode: string, userName: string, url: string) {
+    this.drawHubConnection
+      .invoke('AssociateUserWithUrl', userName, roomCode, url)
+      .catch((err) =>
+        console.log('error attempting to associate user info ' + err)
+      );
   }
+
+  public keepAvatar(roomCode: string, userName: string, url: string) {
+    this.drawHubConnection
+      .invoke('KeepAvatar', userName, roomCode, url)
+      .catch((err) => console.log('error attempting to keep avatar ' + err));
+  }
+
+  //   public startGame(room: string) {
+  //     room = room.toUpperCase();
+
+  //     this.drawHubConnection.invoke('StartGame', room).catch((err) => {
+  //       console.log('error attempting to start game ' + err);
+  //     });
+
+  // here we want to invoke the 65ish second count down on the server
+  // we do it here because it will only get invoked once, since there is only 1 admin
+
+  // this.drawHubConnection.invoke('StartDrawPromptTimer', room).catch((err) => {
+  //   console.log('error attempting to start prompt timer ' + err);
+  // });
+  //   }
 
   public getDrawHubConnection() {
     return this.drawHubConnection;
   }
 
-  public listenStartGame() {
-    this.drawHubConnection.on('StartGame', () => {
-      console.log('RECEIVED START GAME SIGNAL FROM BACKEND, EMITTING EVENT');
-      //   this.startGameEmitter.emit();
-    });
-  }
+  //   public listenStartGame() {
+  //     this.drawHubConnection.on('StartGame', () => {
+  //       console.log('RECEIVED START GAME SIGNAL FROM BACKEND, EMITTING EVENT');
+  //       //   this.startGameEmitter.emit();
+  //     });
+  //   }
 
   public fetchPrompt(room: string) {
     this.drawHubConnection.invoke('FetchPrompt', room).catch((err) => {
@@ -191,4 +205,10 @@ export class DrawService {
         )
       );
   }
+
+  //   public fetchPlaceholderImg(room: string) {
+  //     this.drawHubConnection
+  //       .invoke('FetchPlaceholderImg', room)
+  //       .catch((err) => console.log('error fetching placeholder image ' + err));
+  //   }
 }

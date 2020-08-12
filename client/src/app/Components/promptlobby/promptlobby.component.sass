@@ -1,6 +1,6 @@
 
 p, h1,h2,h3,h4,h5,h6, a, button, div
-    font-family: 'Waiting for the Sunrise', cursive
+    font-family: 'Comic Neue', cursive
 
 h1
     font-size: 36px
@@ -33,12 +33,14 @@ button
         margin: 0
         color: #fff
 
-    & h1
+    & h1,h4
         font-size: 60px
         margin: 0
         background: -webkit-linear-gradient(#743ad5, #d53a9d)
         -webkit-background-clip: text
         -webkit-text-fill-color: transparent
+    & h4
+        font-size: 40px
 
 .border-gradient-purple
     border: 14px solid
@@ -63,7 +65,7 @@ button
     // border: 8px dashed #ff9f43
     border-radius: 5px
 
-    & h2
+    & h2, h4
         font-size: 32px
         background: -webkit-linear-gradient(#743ad5, #d53a9d)
         -webkit-background-clip: text
@@ -145,3 +147,19 @@ img
 
 #time-to-start
     font-size: 80px
+
+.snails-container
+    width: 100%
+
+    & :nth-child(even)
+
+    & :nth-child(odd)
+        transform: scaleX(-1)
+
+    & img
+        transform: scaleX(-1) translateX(10px) translateY(-2px)
+
+.gary-container
+    & img
+        width: 35px
+        height: auto
