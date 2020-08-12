@@ -166,7 +166,36 @@ namespace api.Models
             "ky jelly, alcohol, and a night of experimentation",
             "jean-luc picard of the uss enterprise",
             "chad goes deep",
-            "four inches of fury"
+            "four inches of fury",
+            "it looks like a cat, maybe",
+            "it could possibly, maybe, be a frog",
+            "i think drugs were involved",
+            "baseball bat",
+            "batman",
+            "sandworm",
+            "octopus",
+            "seagull",
+            "cinnamon bun",
+            "stack of pancakes",
+            "hansel and gretel",
+            "attack moth",
+            "rocket blastoff",
+            "dude fishing",
+            "igloo",
+            "snowball fight",
+            "one tall bush and two short bushes",
+            "ant colony",
+            "ant warfare",
+            "melting icecream",
+            "jerk goose",
+            "looks like a tasty treat",
+            "banana and two grapes",
+            "two circles with dots in the middle of each",
+            "whale breaching",
+            "a friendly seal",
+            "pikachu",
+            "pokeybugs"
+
         };
 
         public Tuple<string, string> GetColorPair()

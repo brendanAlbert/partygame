@@ -24,7 +24,7 @@ namespace api.Controllers
             try
             {
                 var file = Request.Form.Files[0];
-                var folderName = Path.Combine("Resources", "Images");
+                var folderName = Path.Combine("wwwroot", "Resources", "Images");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
                 if (file.Length > 0)
@@ -60,28 +60,22 @@ namespace api.Controllers
             }
             try
             {
-                if (imageUrl != null)
-                {
-                    Console.WriteLine($"url of image we fetching = {imageUrl}");
+                Console.WriteLine($"url of image we fetching = {imageUrl}");
 
-                    string folderName;
-                    if (imageUrl.Contains("_placeholder"))
-                    {
-                        folderName = Path.Combine("Resources", "Placeholders");
-                    }
-                    else
-                    {
-                        folderName = Path.Combine("Resources", "Images");
-                    }
-                    var pathToGet = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-                    var fullPath = Path.Combine(pathToGet, imageUrl);
-                    Byte[] b = System.IO.File.ReadAllBytes(fullPath);
-                    return File(b, "image/png");
+                string folderName;
+                if (imageUrl.Contains("_placeholder"))
+                {
+                    folderName = Path.Combine("wwwroot", "Resources", "Placeholders");
                 }
                 else
                 {
-                    return BadRequest(new { imageUrl });
+                    folderName = Path.Combine("wwwroot", "Resources", "Images");
                 }
+                var pathToGet = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                var fullPath = Path.Combine(pathToGet, imageUrl);
+                Byte[] b = System.IO.File.ReadAllBytes(fullPath);
+                return File(b, "image/png");
+
             }
             catch (Exception ex)
             {
@@ -97,12 +91,12 @@ namespace api.Controllers
         {
             try
             {
-                var folderName = Path.Combine("Resources", "Placeholders");
+                var folderName = Path.Combine("wwwroot", "Resources", "Placeholders");
                 var pathToGet = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 var fullPath = Path.Combine(pathToGet, body.originalUrl);
 
                 string newImageUrl = body.newImageUrl;
-                System.IO.File.Copy(fullPath, $"Resources/Images/{ newImageUrl }");
+                System.IO.File.Copy(fullPath, $"wwwroot/Resources/Images/{ newImageUrl }");
                 return Ok(new { newImageUrl });
             }
             catch (Exception ex)
@@ -118,7 +112,7 @@ namespace api.Controllers
             try
             {
                 var file = Request.Form.Files[0];
-                var folderName = Path.Combine("Resources", "PromptImgs");
+                var folderName = Path.Combine("wwwroot", "Resources", "PromptImgs");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
                 if (file.Length > 0)
@@ -150,7 +144,7 @@ namespace api.Controllers
         {
             try
             {
-                var folderName = Path.Combine("Resources", "PromptImgs");
+                var folderName = Path.Combine("wwwroot", "Resources", "PromptImgs");
                 var pathToGet = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 var fullPath = Path.Combine(pathToGet, imageUrl);
                 Byte[] b = System.IO.File.ReadAllBytes(fullPath);

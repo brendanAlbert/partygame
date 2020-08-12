@@ -80,9 +80,9 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this._drawService.getDrawHubConnection().off('StartGame');
-    this._drawService.getDrawHubConnection().off('connectedDrawUsers');
-    this._drawService.getDrawHubConnection().off('FetchedYourImgUrl');
+    // this._drawService.getDrawHubConnection().off('StartGame');
+    // this._drawService.getDrawHubConnection().off('connectedDrawUsers');
+    // this._drawService.getDrawHubConnection().off('FetchedYourImgUrl');
   }
 
   ngOnInit(): void {
@@ -186,12 +186,12 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.roomDrawPlayers.forEach((player) => {
         console.log(`player.name == ${player.name}  username == ${username}`);
-        if (player.name == username) {
+        if (player.name == username && player.id == this.id) {
           this.color1 = player.color1;
           this.color2 = player.color2;
         }
       });
-    }, 1500);
+    }, 300);
   }
 
   keepplaceholder() {
@@ -287,6 +287,10 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
             player: this.player,
           },
         };
+
+        this._drawService.getDrawHubConnection().off('StartGame');
+        this._drawService.getDrawHubConnection().off('connectedDrawUsers');
+        this._drawService.getDrawHubConnection().off('FetchedYourImgUrl');
 
         this.router.navigate([`/prompt`], this.navigationExtras);
       } else {

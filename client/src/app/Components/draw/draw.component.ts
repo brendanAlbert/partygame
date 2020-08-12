@@ -218,7 +218,7 @@ export class DrawComponent implements OnInit, AfterViewInit {
     let imgUrl = 'this should be overridden';
     this.canvas.nativeElement.toBlob(function (blob) {
       let formData = new FormData();
-      that.playerImgUrl = `${this.id}_${this.username}_${this.roomCode}.png`;
+      that.playerImgUrl = `${that.id}_${that.username}_${that.roomCode}.png`;
       imgUrl = that.playerImgUrl;
       formData.append('img', blob, that.playerImgUrl);
 

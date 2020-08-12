@@ -140,7 +140,7 @@ namespace api.Services.Draw
             TimeSpan olderThanOneMinute = new TimeSpan(0, 0, 1, 0);
 
             // to remove player images
-            var folderName = Path.Combine("Resources", "Images");
+            var folderName = Path.Combine("wwwroot", "Resources", "Images");
             var pathToGet = Path.Combine(Directory.GetCurrentDirectory(), folderName);
             DirectoryInfo d = new DirectoryInfo($"{pathToGet}");
             // Console.WriteLine($"path to Get = {pathToGet}");
@@ -174,7 +174,7 @@ namespace api.Services.Draw
             }
 
             // to remove prompt images
-            var promptfolderName = Path.Combine("Resources", "PromptImgs");
+            var promptfolderName = Path.Combine("wwwroot", "Resources", "PromptImgs");
             var promptpathToGet = Path.Combine(Directory.GetCurrentDirectory(), promptfolderName);
             DirectoryInfo promptDir = new DirectoryInfo($"{promptpathToGet}");
             FileInfo[] Files = promptDir.GetFiles("*.png");
