@@ -1,6 +1,7 @@
 import { IDrawPlayer } from './IDrawPlayer';
 
 export class DrawPlayer implements IDrawPlayer {
+  readyToStart: boolean = false;
   stillDrawing: boolean = true;
   garyTrail: string;
   imageUrl: string;

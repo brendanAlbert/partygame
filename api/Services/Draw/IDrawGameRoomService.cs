@@ -9,5 +9,7 @@ namespace api.Services.Draw
         public void AddNewDrawGameRoom(DrawGame drawGame);
 
         public void DeleteDrawGameRoom(string room);
+
+        public void PurgeOldGameRooms();
     }
 }

@@ -260,8 +260,8 @@ export class DrawComponent implements OnInit, AfterViewInit {
 
     setTimeout(() => {
       this._drawService.getConnectedDrawUsers(that.roomCode);
-      this._drawService.getActiveDrawGameLobbies();
+      //   this._drawService.getActiveDrawGameLobbies();
       that.router.navigate(['/drawlobby'], this.getNavExtras());
-    }, 1300);
+    }, 300);
   };
 }

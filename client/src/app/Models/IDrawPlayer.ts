@@ -8,4 +8,5 @@ export interface IDrawPlayer {
   color2: string;
   garyTrail: string;
   stillDrawing: boolean;
+  readyToStart: boolean;
 }

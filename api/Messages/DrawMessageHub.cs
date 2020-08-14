@@ -15,6 +15,40 @@ namespace api.Messages
             _drawService = drawService;
         }
 
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            Console.WriteLine($"Connection with id {Context.ConnectionId} has disconnected with exception : {exception}");
+
+            /*
+            I need to write custom reconnect logic.
+            Basically, we need to store the connectionID for this room.
+
+
+            on disconnect, we could remove the player with connection id from whichever room they were in although it would be hard to recover
+            */
+            Console.WriteLine(exception);
+            await base.OnDisconnectedAsync(exception);
+        }
+
+        public override async Task OnConnectedAsync()
+        {
+            Console.WriteLine($"Connection with id {Context.ConnectionId} has been established!  We will want to save this in case they disconnect.");
+
+            /*
+            I need to write custom reconnect logic.
+            Basically, we need to store the connectionID for this room.
+
+            We will want to do something like store the original connection id in a cookie or localStorage.
+
+            so if the user refreshes, on the client side we will check the localstorage for some unique key id pair
+            i.e.    ['wrinkleid': 'some id']   maybe all we need to add is the roomcode
+
+            if the cookie/localstore value exists, then reassociate this user with that DrawPlayer and navigate to the correct route/round?
+            */
+            await Groups.AddToGroupAsync(Context.ConnectionId, "SignalR Users");
+            await base.OnConnectedAsync();
+        }
+
         public async Task FetchMyPlaceholderImgUrl(string roomCode)
         {
             roomCode = roomCode.ToUpper();
@@ -65,11 +99,15 @@ namespace api.Messages
 
             _drawService.AssociateUserWithId(userName, roomCode, Context.ConnectionId, id);
         }
-        public void AssociateUserWithUrl(string userName, string roomCode, string imgUrl)
+        public async Task AssociateUserWithUrl(string userName, string roomCode, string imgUrl)
         {
             roomCode = roomCode.ToUpper();
 
             _drawService.AssociateUserWithUrl(userName, roomCode, Context.ConnectionId, imgUrl);
+
+            List<DrawPlayer> drawPlayers = _drawService.GetUsersInRoom(roomCode);
+
+            await Clients.Group(roomCode).SendAsync("newPlayerReadyToStart", drawPlayers);
         }
 
         public void KeepAvatar(string userName, string roomCode, string url)

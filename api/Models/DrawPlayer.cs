@@ -12,5 +12,6 @@ namespace api.Models
         public string Color2 { get; set; }
         public string GaryTrail { get; set; } = "";
         public bool StillDrawing { get; set; } = true;
+        public bool ReadyToStart { get; set; } = false;
     }
 }

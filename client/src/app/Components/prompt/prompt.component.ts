@@ -44,7 +44,7 @@ export class PromptComponent implements OnInit, AfterViewInit, OnDestroy {
   garysList: DrawPlayer[] = [];
   countdown: boolean = false;
   countdownTimer: any = null;
-  secondsBeforeRouting: number = 5;
+  secondsBeforeRouting: number = 2;
   promptRoundURL: string = '';
 
   garyTrail: string = '';

@@ -33,11 +33,14 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
   color2: string = '';
   countdown: boolean;
   timer: any = null;
-  secondsLeft: number = 5;
+  secondsLeft: number = 2;
   player: IDrawPlayer = new DrawPlayer();
   drawMyOwn: boolean = false;
   placeHolderImg: string = '';
   readyToStart: boolean = false;
+  avatarChosen: boolean = false;
+
+  numberPlayersReadyToStart: number = 0;
 
   id: string;
 
@@ -69,9 +72,11 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
       this.player.color2 = state.color2;
       this.player.name = state.username;
       this.playerImgReceived = true;
-      this.readyToStart = true;
+      this.avatarChosen = true;
       this.player.imageUrl = state.imgUrl;
       this.id = state.id;
+      clearInterval(this.gameLobbyLoaderTimer);
+      this._drawService.getDrawHubConnection().off('ActiveLobbies');
     }
   }
 
@@ -80,7 +85,7 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // this._drawService.getDrawHubConnection().off('StartGame');
+    this._drawService.getDrawHubConnection().off('ActiveLobbies');
     // this._drawService.getDrawHubConnection().off('connectedDrawUsers');
     // this._drawService.getDrawHubConnection().off('FetchedYourImgUrl');
   }
@@ -97,6 +102,8 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
     }
     if (this._drawService.isConnectionSet() == false) {
       this._drawService.startConnection();
+
+      this.subscribeToEvents();
     }
 
     this._drawService
@@ -104,6 +111,10 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
       .on('connectedDrawUsers', (drawPlayers: IDrawPlayer[]) => {
         console.log('users from draw service : ');
         console.log(drawPlayers);
+
+        if (this.roomDrawPlayers.length != drawPlayers.length) {
+          this.readyToStart = false;
+        }
 
         this.roomDrawPlayers = drawPlayers;
 
@@ -121,32 +132,64 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
             this.placeHolderImg = player.imageUrl;
           }
         });
-
-        //   this.roomUsers = users;
-        // this.incomingDrawPlayer.emit(users);
       });
 
-    this.subscribeToEvents();
+    this._drawService
+      .getDrawHubConnection()
+      .on('newPlayerReadyToStart', (roomDrawPlayers: IDrawPlayer[]) => {
+        // this.roomDrawPlayers = roomDrawPlayers;
+
+        let numberPlayersInRoom = this.roomDrawPlayers.length;
+
+        roomDrawPlayers.forEach((incoming_player) => {
+          this.roomDrawPlayers.forEach((current_player) => {
+            if (
+              incoming_player.name == current_player.name &&
+              incoming_player.id == current_player.id &&
+              !current_player.readyToStart &&
+              incoming_player.readyToStart
+            ) {
+              current_player.readyToStart = true;
+              this.numberPlayersReadyToStart++;
+              console.log(
+                `this.numberPlayersReadyToStart == numberPlayersInRoom`
+              );
+              console.log(
+                `${this.numberPlayersReadyToStart} == ${numberPlayersInRoom}`
+              );
+            }
+          });
+        });
+
+        if (this.numberPlayersReadyToStart == numberPlayersInRoom) {
+          this.readyToStart = true;
+          console.log(
+            'ALL PLAYERS READY TO START, ADMIN SHOULD SEE NEW BUTTON'
+          );
+        }
+      });
 
     if (this.roomCode !== '') {
       this._drawService.listenForAddDrawGroup();
-    } else {
+    }
+
+    if (this.roomCode == '') {
       this._drawService.listenGetActiveDrawGameLobbies();
-    }
-
-    this.countdown = false;
-
-    if (this.activeDrawGameLobbies.length == 0) {
-    }
-
-    if (
-      !this.readyToStart &&
-      (this.roomCode == '' || this.activeDrawGameLobbies.length == 0)
-    ) {
       this.gameLobbyLoaderTimer = setInterval(() => {
         this._drawService.getActiveDrawGameLobbies();
       }, 1000);
     }
+
+    this.countdown = false;
+
+    // if (
+    //   !this.readyToStart &&
+    //   (this.roomCode == '' || this.activeDrawGameLobbies.length == 0)
+    // ) {
+    //   this.gameLobbyLoaderTimer = setInterval(() => {
+    //     this._drawService.getActiveDrawGameLobbies();
+    //   }, 1000);
+    // }
   }
 
   enterRoom(roomcode: string) {
@@ -181,7 +224,7 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
     this.id = this.generateUUID();
     this._drawService.associateUserData(this.roomCode, username, this.id);
     this._drawService.getConnectedDrawUsers(this.roomCode);
-    this._drawService.getActiveDrawGameLobbies();
+    // this._drawService.getActiveDrawGameLobbies();
 
     setTimeout(() => {
       this.roomDrawPlayers.forEach((player) => {
@@ -195,7 +238,8 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
   }
 
   keepplaceholder() {
-    this.readyToStart = true;
+    // this.readyToStart = true;
+    this.avatarChosen = true;
     this._drawService.keepAvatar(
       this.roomCode,
       this.username,
@@ -291,6 +335,7 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
         this._drawService.getDrawHubConnection().off('StartGame');
         this._drawService.getDrawHubConnection().off('connectedDrawUsers');
         this._drawService.getDrawHubConnection().off('FetchedYourImgUrl');
+        this._drawService.getDrawHubConnection().off('newPlayerReadyToStart');
 
         this.router.navigate([`/prompt`], this.navigationExtras);
       } else {

@@ -30,8 +30,39 @@ export class DrawService {
 
     this.drawHubConnection
       .start()
-      .then(() => console.log('draw hub connection started'))
+      .then(() => {
+        console.log('draw hub connection started');
+        console.log(
+          `this.drawHubConnection.connectionId = ${this.drawHubConnection.connectionId}`
+        );
+        localStorage.setItem(
+          'wbg-connection-id',
+          this.drawHubConnection.connectionId
+        );
+      })
       .catch((err) => console.log('error while starting connection ' + err));
+
+    this.drawHubConnection.onclose((err) => {});
+
+    this.drawHubConnection.onreconnecting((err) => {
+      console.log('client reconnecting ...');
+      console.error('the client connection state : ');
+      console.error(this.drawHubConnection.state);
+    });
+
+    this.drawHubConnection.onreconnected((err) => {
+      console.log(' onreconnected callback fired .');
+      console.error('the client connection state : ');
+      console.error(this.drawHubConnection.state);
+    });
+  };
+
+  public stopConnection = () => {
+    this.drawHubConnection
+      .stop()
+      .then(() => console.log('draw hub connection ended'))
+      .catch((err) => console.log('error while starting connection ' + err));
+    this.drawServiceConnectionSet = false;
   };
 
   public isConnectionSet() {
@@ -206,9 +237,6 @@ export class DrawService {
       );
   }
 
-  //   public fetchPlaceholderImg(room: string) {
-  //     this.drawHubConnection
-  //       .invoke('FetchPlaceholderImg', room)
-  //       .catch((err) => console.log('error fetching placeholder image ' + err));
-  //   }
+  //   let theme = localStorage.getItem("theme");
+  // localStorage.setItem("theme", mode);
 }

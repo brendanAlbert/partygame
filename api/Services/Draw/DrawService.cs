@@ -79,6 +79,7 @@ namespace api.Services.Draw
 
         public List<string> GetAllDrawGameRooms()
         {
+            _drawGameRoomService.PurgeOldGameRooms();
             return _drawGameRoomService.GetDrawGameRooms().Select(rm => rm.RoomName).ToList();
         }
 
@@ -105,6 +106,10 @@ namespace api.Services.Draw
                 .First(rm => rm.RoomName == roomCode)
                 .DrawPlayers
                 .First(player => player.ConnectionString == connectionId).ImageUrl = imgurl;
+            _drawGameRoomService.GetDrawGameRooms()
+            .First(rm => rm.RoomName == roomCode)
+            .DrawPlayers
+            .First(player => player.ConnectionString == connectionId).ReadyToStart = true;
         }
 
         public string FetchPrompt(string room)
@@ -126,6 +131,10 @@ namespace api.Services.Draw
                 .First(rm => rm.RoomName == roomCode)
                 .DrawPlayers
                 .First(player => player.ConnectionString == connectionId).ImageUrl = imgUrl;
+            _drawGameRoomService.GetDrawGameRooms()
+            .First(rm => rm.RoomName == roomCode)
+            .DrawPlayers
+            .First(player => player.ConnectionString == connectionId).ReadyToStart = true;
         }
 
         public void DeleteDrawGame(string room)

@@ -47,7 +47,7 @@ export class PromptresultsComponent
   readyToShowAnswers: boolean = false;
   readyForNextRound: boolean = false;
   headingToNextRound: boolean = false;
-  timeLeftTillNextRound: number = 6;
+  timeLeftTillNextRound: number = 3;
   timeLeftTillNextRoundTimer: any;
   //   timeSinceInit : number = 0;
   //   timeSinceInitTimer: any;
@@ -473,6 +473,8 @@ export class PromptresultsComponent
       console.log(this.scoreKeeperList);
       this.scoreKeeperList.sort((a, b) => b.score - a.score);
       this.showFinalScoreScreen = true;
+      this._drawService.getDrawHubConnection().off('ActiveLobbies');
+      this._drawService.stopConnection();
     });
   }
 }

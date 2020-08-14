@@ -5,11 +5,12 @@
 
 <div class="container">
   <div class="draw-lobby-container">
-    <h1>Drawing Lobby</h1>
-
-    <div *ngIf="inRoom" class="room-code-container">
-      <p>room code:</p>
-      <h1 style="text-transform: uppercase;">{{ roomCode }}</h1>
+    <div class="top-container">
+      <div *ngIf="inRoom" class="room-code-container">
+        <p>room code:</p>
+        <h1 style="text-transform: uppercase;">{{ roomCode }}</h1>
+      </div>
+      <h1>Drawing Lobby</h1>
     </div>
 
     <div *ngIf="!inRoom" class="active-game-lobbies">
@@ -35,16 +36,18 @@
                 height="80"
               />
             </div>
-            <div *ngIf="player.imageUrl == undefined">
-              <img
-                src="{{ playerImgUrl + player.imageUrl }}"
-                width="80"
-                height="80"
-              />
-            </div>
 
             <div *ngIf="player.color1" [style.color]="player.color1">
               {{ player.name }}
+            </div>
+            <div>
+              <span *ngIf="player.readyToStart" class="ready"
+                ><img class="pix" src="../../../assets/check.png" />ready</span
+              >
+              <span *ngIf="!player.readyToStart" class="not-ready"
+                ><img class="pix" src="../../../assets/cancel.png" />not
+                ready</span
+              >
             </div>
           </div>
         </div>
@@ -62,7 +65,7 @@
     </section>
 
     <section
-      *ngIf="inRoom && readyToStart == false"
+      *ngIf="inRoom && avatarChosen == false"
       class="join-game-section border-gradient-purple"
     >
       <div class="join-game-section-left" *ngIf="hasUsername == false">
@@ -105,13 +108,13 @@
     </section> -->
 
     <section
-      *ngIf="readyToStart"
+      *ngIf="avatarChosen"
       class="waiting-section border-gradient-purple"
     >
-      <div *ngIf="isAdmin" class="username-input-wrapper">
+      <div *ngIf="isAdmin && readyToStart" class="username-input-wrapper">
         <button (click)="startGame()">start game</button>
       </div>
-      <div *ngIf="!isAdmin" class="username-input-wrapper">
+      <div *ngIf="!readyToStart || !isAdmin" class="username-input-wrapper">
         <h2>waiting for other players + admin to start game</h2>
       </div>
     </section>
@@ -127,7 +130,7 @@
 
     <div *ngIf="countdown" class="countdown">
       <div>game starts in -</div>
-      <div #timeleft id="time-to-start">6</div>
+      <div #timeleft id="time-to-start">3</div>
     </div>
   </div>
 </div>

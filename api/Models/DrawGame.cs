@@ -7,10 +7,15 @@ namespace api.Models
     public class DrawGame
     {
         public string RoomName { get; set; } = "";
-        public int RoundNumber { get; set; } = 0;
+        public DateTime TimeCreated { get; set; }
         public bool LastRound { get; set; } = false;
         public List<DrawPlayer> DrawPlayers { get; set; } = new List<DrawPlayer>();
         Random rnd = new Random();
+
+        public DrawGame()
+        {
+            TimeCreated = DateTime.Now;
+        }
 
         public List<DrawGameRound> GameRounds { get; set; } = new List<DrawGameRound>();
 
