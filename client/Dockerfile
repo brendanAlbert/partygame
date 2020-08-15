@@ -3,7 +3,7 @@
 FROM node:alpine AS wrinkles
 WORKDIR /app
 COPY . .
-RUN npm install && npm run build
+RUN npm install && npm run ng-high-memory
 
 
 # stage 2

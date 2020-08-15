@@ -58,10 +58,12 @@ export class DrawService {
   };
 
   public stopConnection = () => {
-    this.drawHubConnection
-      .stop()
-      .then(() => console.log('draw hub connection ended'))
-      .catch((err) => console.log('error while starting connection ' + err));
+    if (this.drawHubConnection) {
+      this.drawHubConnection
+        .stop()
+        .then(() => console.log('draw hub connection ended'))
+        .catch((err) => console.log('error while starting connection ' + err));
+    }
     this.drawServiceConnectionSet = false;
   };
 

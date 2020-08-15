@@ -12,7 +12,6 @@ import { IDrawPlayer } from 'src/app/Models/IDrawPlayer';
 import { DrawPlayer } from 'src/app/Models/DrawPlayer';
 import { environment } from '../../../environments/environment';
 import anime from 'animejs/lib/anime.es';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-promptresults',
@@ -30,7 +29,7 @@ export class PromptresultsComponent
   player: DrawPlayer;
   promptRoundURL: string = '';
   playerImgUrl: string = environment.player_image_url;
-  //   isAdmin: boolean = false;
+
   roundResultsObject: any = {};
   answer: string = '';
 
@@ -49,8 +48,7 @@ export class PromptresultsComponent
   headingToNextRound: boolean = false;
   timeLeftTillNextRound: number = 3;
   timeLeftTillNextRoundTimer: any;
-  //   timeSinceInit : number = 0;
-  //   timeSinceInitTimer: any;
+
   timeSinceLastTap: number = 6;
   timeSinceLastTapTimer: any;
 

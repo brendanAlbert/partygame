@@ -86,6 +86,7 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._drawService.getDrawHubConnection().off('ActiveLobbies');
+    clearInterval(this.gameLobbyLoaderTimer);
     // this._drawService.getDrawHubConnection().off('connectedDrawUsers');
     // this._drawService.getDrawHubConnection().off('FetchedYourImgUrl');
   }

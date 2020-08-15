@@ -1,0 +1,29 @@
+<div class="topnav">
+  <div class="topnav-inner">
+    <div class="logo-wrapper">
+      <a (click)="mainMenu()">
+        <img class="nav-brain" src="../../../assets/wrinkle_tech_brain.png" />
+      </a>
+      <p>WBG</p>
+    </div>
+
+    <a (click)="openNav()">
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="overlay" #myNav>
+  <a href="javascript:void(0)" class="closebtn" (click)="closeNav()">&times;</a>
+
+  <div class="overlay-content">
+    <a (click)="mainMenu()">Main Menu</a>
+    <a (click)="triviaLobby()">Trivia Game Lobby</a>
+    <a (click)="memoryLobby()">Memory Game Lobby</a>
+    <a (click)="drawLobby()">Draw Game Lobby</a>
+  </div>
+</div>

@@ -17,6 +17,7 @@ import { PromptComponent } from './Components/prompt/prompt.component';
 // import { PromptlobbyComponent } from './Components/promptlobby/promptlobby.component';
 import { GuesspromptComponent } from './Components/guessprompt/guessprompt.component';
 import { PromptresultsComponent } from './Components/promptresults/promptresults.component';
+import { NavbarComponent } from './Components/navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { PromptresultsComponent } from './Components/promptresults/promptresults
     // PromptlobbyComponent,
     GuesspromptComponent,
     PromptresultsComponent,
+    NavbarComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   exports: [ProgressbarComponent, ScoreComponent],

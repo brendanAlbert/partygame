@@ -1,0 +1,89 @@
+.topnav
+    display: flex
+    width: 100%
+    // justify-content: space-between
+    align-items: center
+    border-bottom: 2px solid black
+
+.topnav-inner
+    width: 95%
+    display: flex
+    margin: 0 auto
+    justify-content: space-between
+    align-items: center
+
+.logo-wrapper
+    display: flex
+    flex-direction: row
+    align-items: center
+
+    & p
+        margin: 0
+
+.nav-brain
+    width: 45px
+
+.hamburger
+    display: flex
+    flex-direction: column
+    justify-content: space-evenly
+
+    & span
+        width: 20px
+        height: 4px
+        border-radius: 10px
+        margin: 1px
+        background: black
+
+.overlay
+    height: 0%
+    width: 100%
+    position: fixed
+    z-index: 1000
+    left: 0
+    top: 0
+    background-color: rgb(0,0,0)
+    background-color: rgba(0,0,0, 0.9)
+    // overflow-x: hidden
+    overflow: hidden
+    transition: 0.5s
+
+    & a
+        padding: 8px
+        text-decoration: none
+        font-size: 36px
+        color: #818181
+        display: block
+        transition: 0.3s
+        cursor: pointer
+
+    & a:hover, a:focus
+        color: #f1f1f1
+
+    & .closebtn
+        position: absolute
+        top: 20px
+        right: 45px
+        font-size: 60px
+
+.overlay-content
+    position: relative
+    top: 25%
+    width: 100%
+    text-align: center
+    margin-top: 30px
+
+@media screen and (max-height: 450px)
+    .overlay
+        & a
+            font-size: 20px
+        & .closebtn
+            font-size: 40px
+            top: 15px
+            right: 35px
+
+.dg-btn
+    border: 5px solid #743ad5
+
+.bg-asphalt
+    background-color: #34495e
