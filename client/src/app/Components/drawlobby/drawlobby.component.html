@@ -19,7 +19,11 @@
         no game lobbies at the moment!
       </p>
       <div class="active-game-lobbies-grid">
-        <div *ngFor="let lobby of activeDrawGameLobbies">
+        <div
+          *ngFor="let lobby of activeDrawGameLobbies"
+          (click)="populateEnterRoom(lobby)"
+          class="lobbycode"
+        >
           {{ lobby }}
         </div>
       </div>
@@ -99,13 +103,6 @@
         </div>
       </div>
     </section>
-
-    <!-- <section
-      *ngIf="isAdmin && hasUsername && playerImgReceived == true"
-      class="join-game-section border-gradient-purple"
-    >
-      
-    </section> -->
 
     <section
       *ngIf="avatarChosen"

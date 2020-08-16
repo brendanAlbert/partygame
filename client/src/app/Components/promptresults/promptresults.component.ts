@@ -79,8 +79,8 @@ export class PromptresultsComponent
 
   judgementalTaunts: string[] = [
     'yeah, one of you drew that.',
-    'no judgement here, this is a judgement free zone',
-    "y'all mfers need jesus",
+    'no judgment here, this is a judgment free zone',
+    "that might be the best drawing we've seen yet",
     'i wish I was this talented',
     'a true work of art, it shall hang on my refrigerator',
     'and just like that a new art style is born',

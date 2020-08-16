@@ -38,10 +38,10 @@ export class DrawComponent implements OnInit, AfterViewInit {
     const state = navigation.extras.state as {
       roomCode: string;
       username: string;
-      color1: string;
-      id: string;
-      color2: string;
       imgUrl: string;
+      id: string;
+      color1: string;
+      color2: string;
     };
     this.roomCode = state.roomCode;
     this.username = state.username;

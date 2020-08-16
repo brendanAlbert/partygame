@@ -145,8 +145,9 @@ namespace api.Services.Draw
 
             // we also want to remove all images and prompts that include this room name
 
-            TimeSpan olderThanHour = new TimeSpan(0, 1, 0, 0);
+            // TimeSpan olderThanHour = new TimeSpan(0, 1, 0, 0);
             TimeSpan olderThanOneMinute = new TimeSpan(0, 0, 1, 0);
+            TimeSpan olderThan20Minutes = new TimeSpan(0, 0, 20, 0);
 
             // to remove player images
             var folderName = Path.Combine("wwwroot", "Resources", "Images");
@@ -160,14 +161,14 @@ namespace api.Services.Draw
 
                 if (file.Name.Contains("_placeholder") == false)
                 {
-                    Console.WriteLine($"DateTime.Now - File.GetLastAccessTime(file.FullName) > olderThanHour  = {DateTime.Now - File.GetLastAccessTime(file.FullName) > olderThanHour}");
-                    if (DateTime.Now - File.GetLastAccessTime(file.FullName) > olderThanHour)
+                    Console.WriteLine($"DateTime.Now - File.GetLastAccessTime(file.FullName) > olderThan20Minutes  = {DateTime.Now - File.GetLastAccessTime(file.FullName) > olderThan20Minutes}");
+                    if (DateTime.Now - File.GetLastAccessTime(file.FullName) > olderThan20Minutes)
                     {
                         Console.WriteLine($"DateTime.Now  = {DateTime.Now}");
                         Console.WriteLine($"File.GetLastAccessTime(file.FullName) = {File.GetLastAccessTime(file.FullName)}");
-                        Console.WriteLine($"older than hour  = {olderThanHour}");
+                        Console.WriteLine($"older than 20 minutes  = {olderThan20Minutes}");
                         // Console.WriteLine($"deleting file [{file.Name}] because it is over a minute old");
-                        Console.WriteLine($"deleting file [{file.Name}] because it is over an hour old");
+                        Console.WriteLine($"deleting file [{file.Name}] because it is over 20 minutes old");
                         File.Delete(file.ToString());
                     }
                     else if (file.Name.Contains("_" + room))
@@ -193,10 +194,10 @@ namespace api.Services.Draw
             foreach (FileInfo file in Files)
             {
 
-                if (DateTime.Now - File.GetLastAccessTime(file.FullName) > olderThanHour)
+                if (DateTime.Now - File.GetLastAccessTime(file.FullName) > olderThan20Minutes)
                 {
-                    // Console.WriteLine($"would delete file [{file.Name}] because it is over a minute old");
-                    Console.WriteLine($"deleting file [{file.Name}] because it is over an hour old");
+                    Console.WriteLine($"would delete file [{file.Name}] because it is over 20 minutes old");
+                    // Console.WriteLine($"deleting file [{file.Name}] because it is over an hour old");
                     File.Delete(file.ToString());
                 }
                 else if (file.Name.Contains(room + "_prompt"))

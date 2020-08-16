@@ -23,7 +23,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   mainMenu() {
     this._drawService.stopConnection();
-    // this._drawService.getDrawHubConnection().off('ActiveLobbies');
+
     this.router.navigate([`/`]);
   }
   openNav() {
@@ -34,23 +34,20 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
   triviaLobby() {
     this._drawService.stopConnection();
-    // if(this._drawService.getDrawHubConnection()) {
-    //     this._drawService.getDrawHubConnection().off('ActiveLobbies');
-    // }
+
     this.router.navigate([`/lobby`]);
   }
   memoryLobby() {
     this._drawService.stopConnection();
-    // if(this._drawService.getDrawHubConnection()) {
-    //     this._drawService.getDrawHubConnection().off('ActiveLobbies');
-    // }
+
     this.router.navigate([`/simonlobby`]);
   }
   drawLobby() {
     this._drawService.stopConnection();
-    // if(this._drawService.getDrawHubConnection()) {
-    //     this._drawService.getDrawHubConnection().off('ActiveLobbies');
-    // }
-    this.router.navigate([`/drawlobby`]);
+
+    this.router.navigate([`/`]);
+    setTimeout(() => {
+      this.router.navigate([`/drawlobby`]);
+    }, 50);
   }
 }

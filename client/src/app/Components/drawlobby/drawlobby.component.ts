@@ -18,6 +18,7 @@ import { DrawService } from '../../Services/draw.service';
 })
 export class DrawlobbyComponent implements OnInit, OnDestroy {
   @ViewChild('timeleft', { static: false }) countdowntimer: ElementRef;
+  @ViewChild('roomcode', { static: false }) roomcodeInput: ElementRef;
   roomCode: string = '';
   username: string = '';
   inRoom: boolean = false;
@@ -73,15 +74,25 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
       this.player.name = state.username;
       this.playerImgReceived = true;
       this.avatarChosen = true;
+      this.readyToStart = true;
       this.player.imageUrl = state.imgUrl;
       this.id = state.id;
       clearInterval(this.gameLobbyLoaderTimer);
       this._drawService.getDrawHubConnection().off('ActiveLobbies');
+      this._drawService.associateUserUrl(
+        this.roomCode,
+        this.username,
+        state.imgUrl
+      );
     }
   }
 
   getPlayerColor(): string {
     return this.color1;
+  }
+
+  populateEnterRoom(roomcode: string) {
+    this.roomcodeInput.nativeElement.value = roomcode;
   }
 
   ngOnDestroy() {
@@ -103,7 +114,6 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
     }
     if (this._drawService.isConnectionSet() == false) {
       this._drawService.startConnection();
-
       this.subscribeToEvents();
     }
 
@@ -113,9 +123,9 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
         console.log('users from draw service : ');
         console.log(drawPlayers);
 
-        if (this.roomDrawPlayers.length != drawPlayers.length) {
-          this.readyToStart = false;
-        }
+        // if (this.roomDrawPlayers.length != roomDrawPlayers.length) {
+        this.readyToStart = false;
+        // }
 
         this.roomDrawPlayers = drawPlayers;
 
@@ -140,10 +150,11 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
       .on('newPlayerReadyToStart', (roomDrawPlayers: IDrawPlayer[]) => {
         // this.roomDrawPlayers = roomDrawPlayers;
 
+        this.numberPlayersReadyToStart = 0;
         let numberPlayersInRoom = this.roomDrawPlayers.length;
 
-        roomDrawPlayers.forEach((incoming_player) => {
-          this.roomDrawPlayers.forEach((current_player) => {
+        this.roomDrawPlayers.forEach((current_player) => {
+          roomDrawPlayers.forEach((incoming_player) => {
             if (
               incoming_player.name == current_player.name &&
               incoming_player.id == current_player.id &&
@@ -151,7 +162,7 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
               incoming_player.readyToStart
             ) {
               current_player.readyToStart = true;
-              this.numberPlayersReadyToStart++;
+              //   this.numberPlayersReadyToStart++;
               console.log(
                 `this.numberPlayersReadyToStart == numberPlayersInRoom`
               );
@@ -160,6 +171,10 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
               );
             }
           });
+
+          if (current_player.readyToStart) {
+            this.numberPlayersReadyToStart++;
+          }
         });
 
         if (this.numberPlayersReadyToStart == numberPlayersInRoom) {
@@ -167,6 +182,13 @@ export class DrawlobbyComponent implements OnInit, OnDestroy {
           console.log(
             'ALL PLAYERS READY TO START, ADMIN SHOULD SEE NEW BUTTON'
           );
+        }
+
+        if (this.isAdmin) {
+          console.log(
+            `this.numberPlayersReadyToStart ${this.numberPlayersReadyToStart} == numberPlayersInRoom ${numberPlayersInRoom}`
+          );
+          console.log(`ADMIN HERE AND READY TO START = ${this.readyToStart}`);
         }
       });
 
