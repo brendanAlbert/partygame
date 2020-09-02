@@ -35,6 +35,10 @@ export class GuesspromptComponent implements OnInit, AfterViewInit, OnDestroy {
   showModal: boolean = false;
   timeToSeeResults: boolean = false;
   navigationExtras: NavigationExtras = {};
+  numberPlayersReady: number = 0;
+  totalPlayersInGame: number = 0;
+  timeToSeeGuesses: boolean = false;
+  numberPlayersWaiting: number = 0;
 
   colorsList: string[] = [
     '#0d6efd',
@@ -78,15 +82,25 @@ export class GuesspromptComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this._drawService
       .getDrawHubConnection()
-      .on('FetchedNewPlayerGuesses', (playersWhoHaveGuessed: IDrawPlayer[]) => {
-        this.playersWhoHaveGuessed = playersWhoHaveGuessed;
+      //   .on('FetchedNewPlayerGuesses', (playersWhoHaveGuessed: IDrawPlayer[]) => {
+      //     this.playersWhoHaveGuessed = playersWhoHaveGuessed;
+      //   });
+      .on('FetchedNewPlayerGuesses', (playersWhoHaveGuessedDto: any) => {
+        this.playersWhoHaveGuessed =
+          playersWhoHaveGuessedDto.playersWhoAnswered;
+        this.numberPlayersReady++;
+        this.totalPlayersInGame = playersWhoHaveGuessedDto.numberPlayersTotal;
+        if (
+          this.isAdmin &&
+          this.totalPlayersInGame === this.numberPlayersReady
+        ) {
+          this.timeToSeeGuesses = true;
+        }
       });
 
     this._drawService
       .getDrawHubConnection()
       .on('FetchedAllGuessesForPromptRound', (allAnswers: string[]) => {
-        console.log('receiving fetched all guesses ?? ');
-
         this.playersWhoHaveGuessed = [];
 
         this.seeAllGuesses = true;
@@ -107,9 +121,21 @@ export class GuesspromptComponent implements OnInit, AfterViewInit, OnDestroy {
       .on(
         'FetchPlayersWaitingToSeeResults',
         (playersWaiting: IDrawPlayer[]) => {
+          console.log('playersWaiting');
+          console.log(playersWaiting);
+
           this.playersWhoHaveGuessed = playersWaiting;
 
-          if (this.isAdmin) {
+          this.numberPlayersWaiting++;
+
+          if (this.numberPlayersWaiting > 0) {
+            this.timeToSeeGuesses = false;
+          }
+
+          if (
+            this.isAdmin &&
+            this.numberPlayersWaiting === this.totalPlayersInGame
+          ) {
             this.timeToSeeResults = true;
           }
         }

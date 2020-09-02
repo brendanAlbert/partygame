@@ -172,7 +172,7 @@ export class DrawComponent implements OnInit, AfterViewInit {
     });
 
     canvas.height = 400;
-    canvas.width = window.innerWidth;
+    canvas.width = window.innerWidth <= 400 ? window.innerWidth : 400;
 
     canvas.addEventListener('mousedown', mouseDown, false);
     canvas.addEventListener('mousemove', mouseMove, false);

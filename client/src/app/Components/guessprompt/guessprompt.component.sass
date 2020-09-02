@@ -11,7 +11,10 @@ p, h1,h2,h3,h4,h5,h6, a, button, div
     padding-top: 10px
     justify-content: space-around
     align-items: center
-    background-color: black
+    // background-color: black
+    background: #222
+    border-radius: 10px
+    margin-bottom: 30px
 
     & h2
         font-size: 32px
@@ -47,6 +50,16 @@ p, h1,h2,h3,h4,h5,h6, a, button, div
     justify-content: center
     align-items: center
     width: 100%
+    margin: 30px auto
+
+    & textarea
+        border: 5px solid #10ac84
+        border-radius: 10px
+
+    & button
+        border: 1px solid #10ac84
+        border-radius: 10px
+        box-shadow: 0px 2px 0px 3px #10ac84
 
 .added-guesses-container
     display: flex
@@ -81,6 +94,14 @@ p, h1,h2,h3,h4,h5,h6, a, button, div
 
 .button-wrapper
     width: 100%
+    // margin: 30px auto
+    margin-bottom: 30px
+    text-align: center
+
+    & button
+        border: 2px solid #10ac84
+        border-radius: 10px
+        box-shadow: 0px 1px 0px 3px #10ac84
 
 .see-all-guesses-wrapper
     width: 95%
@@ -108,13 +129,15 @@ p, h1,h2,h3,h4,h5,h6, a, button, div
 
 .all-guesses-container
     width: 95%
+    margin: 0 auto
+    text-align: center
 
     & h2
         text-align: center
         font-size: 32px
-        background: -webkit-linear-gradient(#743ad5, #d53a9d)
-        -webkit-background-clip: text
-        -webkit-text-fill-color: transparent
+        // background: -webkit-linear-gradient(#743ad5, #d53a9d)
+        // -webkit-background-clip: text
+        // -webkit-text-fill-color: transparent
 
 .confirm-modal
     height: 100%
@@ -143,8 +166,28 @@ p, h1,h2,h3,h4,h5,h6, a, button, div
         border: none
         margin: 10px auto
 
+.modal-wrapper
+    max-width: 500px
+
 .green
     color: #28a745
 
 .red
     color: #dc3545
+
+.image-container
+    display: flex
+    justify-content: center
+    align-items: center
+    margin: 0 auto
+
+    & img
+        max-width: 500px
+        max-height: 500px
+        margin: 0 auto
+
+.container
+    max-width: 600px
+
+.enter-guess-container
+    text-align: center

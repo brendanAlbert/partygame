@@ -302,7 +302,17 @@ export class PromptComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     canvas.height = 400;
-    canvas.width = window.innerWidth;
+    // canvas.width = window.innerWidth < 400 ? window.innerWidth - 2 : 400;
+
+    if (window.innerWidth < 330) {
+      canvas.width = 300;
+    } else if (window.innerWidth <= 360) {
+      canvas.width = 340;
+    } else if (window.innerWidth <= 375) {
+      canvas.width = 350;
+    } else {
+      canvas.width = 400;
+    }
 
     canvas.addEventListener('mousedown', mouseDown, false);
     canvas.addEventListener('mousemove', mouseMove, false);

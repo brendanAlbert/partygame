@@ -339,6 +339,11 @@ namespace api.Models
             return this.CurrentRound[currentRoundIndex].Players;
         }
 
+        public int GetTotalNumberPlayers()
+        {
+            return this.DrawPlayers.Count;
+        }
+
         public List<string> GetAllAnswersCurrentRound()
         {
             int currentRoundIndex = this.CurrentRound.Count - 1;

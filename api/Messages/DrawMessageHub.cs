@@ -180,7 +180,16 @@ namespace api.Messages
 
             List<DrawPlayer> playersWhoAnswered = _drawService.GetDrawGame(room).AddAnswerAndReturnPlayers(drawPlayer, playersGuess);
 
-            await Clients.Group(room).SendAsync("FetchedNewPlayerGuesses", playersWhoAnswered);
+            var guessResultsDTO = new
+            {
+                playersWhoAnswered = playersWhoAnswered,
+                numberPlayersTotal = _drawService.GetDrawGame(room).GetTotalNumberPlayers()
+            };
+
+            Console.WriteLine("guessResultsDTO");
+            Console.WriteLine(guessResultsDTO);
+
+            await Clients.Group(room).SendAsync("FetchedNewPlayerGuesses", guessResultsDTO);
         }
 
         public async Task FetchAllGuessesForPromptRound(string room)

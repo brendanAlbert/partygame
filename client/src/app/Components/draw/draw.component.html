@@ -5,7 +5,7 @@
 
 <app-navbar></app-navbar>
 
-<div *ngIf="!sending">
+<div class="draw-page" *ngIf="!sending">
   <canvas #canvas id="canvas"></canvas>
 
   <div class="draw-wrapper">
@@ -16,9 +16,7 @@
     <div class="colors-wrapper">
       <div class="color-btn" #color1 id="color1" [ngStyle]="getColor1()"></div>
       <div class="color-btn" #color2 id="color2" [ngStyle]="getColor2()"></div>
-      <button #clearCanvasBtn id="clearCanvasBtn">
-        clear canvas
-      </button>
+      <button #clearCanvasBtn id="clearCanvasBtn">clear canvas</button>
     </div>
   </div>
   <footer class="join-game-footer">

@@ -7,14 +7,11 @@
 
 <div class="container">
   <div class="draw-lobby-container">
-    <div>
+    <div class="image-container">
       <img #art src="" alt="" />
     </div>
 
-    <section
-      *ngIf="!seeAllGuesses"
-      class="guess-container border-gradient-purple"
-    >
+    <section *ngIf="!seeAllGuesses" class="guess-container">
       <div *ngIf="guessAdded">
         <h2>guesses submitted</h2>
         <div class="added-guesses-container">
@@ -27,7 +24,10 @@
               {{ i + 1 }}
             </div>
           </div>
-          <div *ngIf="isAdmin && !timeToSeeResults" class="button-wrapper">
+          <div
+            *ngIf="isAdmin && !timeToSeeResults && timeToSeeGuesses"
+            class="button-wrapper"
+          >
             <button id="see-guesses" (click)="seeGuesses()">
               see all guesses
             </button>
@@ -39,7 +39,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="!guessAdded">
+      <div class="enter-guess-container" *ngIf="!guessAdded">
         <h2>enter guess:</h2>
         <div class="username-input-wrapper">
           <textarea #userguess type="text" name="userguess"></textarea>
@@ -68,10 +68,12 @@
         </div>
       </div>
       <div *ngIf="showModal" class="confirm-modal">
-        <h4>pick this one?</h4>
-        <p>"{{ selectedAnswerText }}"</p>
-        <button class="green" (click)="confirmAnswer()">yee boii</button>
-        <button class="red" (click)="chooseDifferent()">maybe not</button>
+        <div class="modal-wrapper">
+          <h4>pick this one?</h4>
+          <p>"{{ selectedAnswerText }}"</p>
+          <button class="green" (click)="confirmAnswer()">yee boii</button>
+          <button class="red" (click)="chooseDifferent()">maybe not</button>
+        </div>
       </div>
     </section>
   </div>
